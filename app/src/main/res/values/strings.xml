@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">HelloWorld</string>
+
+    <string name="video_tab_1">Hot Videos</string>
+    <string name="video_tab_2">Categories</string>
+
+    //menu item
+    <string name="menu_video">Videos</string>
+    <string name="menu_version">Version</string>
+    <string name="menu_about">About us</string>
+    <string name="menu_home">Home</string>
+</resources>
