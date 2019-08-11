@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".Activity.MainActivity"
     android:id="@+id/drawer_layout"
     android:fitsSystemWindows="true"
     >
@@ -24,10 +24,13 @@
             >
         </androidx.appcompat.widget.Toolbar>
 
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"></FrameLayout>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+        </LinearLayout>
 
     </LinearLayout>
 

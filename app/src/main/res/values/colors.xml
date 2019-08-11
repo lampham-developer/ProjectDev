@@ -8,5 +8,8 @@
     <color name="white">#ffffff</color>
     <color name="blue">#03A9F4</color>
 
+
+    <color name="background_black">#75575454</color>
     <color name="selected_tab">#86FFFFFF</color>
+    <color name="category_title_color">#8BAAA4A4</color>
 </resources>

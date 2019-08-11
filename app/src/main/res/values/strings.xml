@@ -3,7 +3,8 @@
 
     <string name="video_tab_1">Hot Videos</string>
     <string name="video_tab_2">Categories</string>
-
+    <string name="loading">Loading Videos</string>
+    <string name="disconnect">Failed to connect internet</string>
     //menu item
     <string name="menu_video">Videos</string>
     <string name="menu_version">Version</string>
