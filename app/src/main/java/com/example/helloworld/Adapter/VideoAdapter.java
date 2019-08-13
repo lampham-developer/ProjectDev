@@ -16,6 +16,9 @@ import com.example.helloworld.Interface.VideoClick;
 import com.example.helloworld.R;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Viewholder> {
@@ -43,18 +46,31 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Viewholder> 
     @Override
     public void onBindViewHolder(@NonNull VideoAdapter.Viewholder holder, int position) {
         final Video video = videoList.get(position);
-        holder.tv_item_artis.setText(video.getArtis_name());
-        holder.tv_item_date.setText(video.getDate_public());
-        holder.tv_item_title.setText(video.getTitle());
-        Picasso.with(context).load(video.getAvt_url()).into(holder.iv_item_img);
-        holder.layout_item_video_view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                videoClick.onClick(video);
-            }
-        });
-
-
+        if (position == 0){
+            holder.layout_item_video_view.setVisibility(View.GONE);
+            holder.tv_top_title.setText(video.getTitle());
+            holder.tv_top_artis.setText(checkNull(video.getArtis_name()));
+            holder.tv_top_date.setText(formatDate(video.getDate_public()));
+            Picasso.with(context).load(video.getAvt_url()).into(holder.iv_top_img);
+            holder.layout_top_video.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    videoClick.onClick(video);
+                }
+            });
+        }else{
+            holder.layout_top_video.setVisibility(View.GONE);
+            holder.tv_item_artis.setText(checkNull(video.getArtis_name()));
+            holder.tv_item_date.setText(formatDate(video.getDate_public()));
+            holder.tv_item_title.setText(video.getTitle());
+            Picasso.with(context).load(video.getAvt_url()).into(holder.iv_item_img);
+            holder.layout_item_video_view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    videoClick.onClick(video);
+                }
+            });
+        }
     }
 
     @Override
@@ -63,12 +79,30 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Viewholder> 
         return videoList.size();
     }
 
+    private String checkNull(String name){
+        return name.equals("null") ? "" : name;
+    }
+
+    private String formatDate(String date){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date output = null;
+        try {
+             output= simpleDateFormat.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return new SimpleDateFormat("dd/MM/yyyy").format(output);
+    }
+
     public class Viewholder extends RecyclerView.ViewHolder {
         TextView tv_item_title;
         TextView tv_item_artis;
         TextView tv_item_date;
         LinearLayout layout_item_video_view;
         ImageView iv_item_img;
+        LinearLayout layout_top_video;
+        ImageView iv_top_img;
+        TextView tv_top_title, tv_top_artis, tv_top_date;
 
         public Viewholder(@NonNull View itemView) {
             super(itemView);
@@ -78,7 +112,11 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Viewholder> 
             tv_item_date = itemView.findViewById(R.id.tv_item_date);
             iv_item_img = itemView.findViewById(R.id.iv_item_img);
             layout_item_video_view = itemView.findViewById(R.id.layout_item_video_view);
+            layout_top_video = itemView.findViewById(R.id.layout_top_video);
+            iv_top_img = itemView.findViewById(R.id.iv_top_img);
+            tv_top_title = itemView.findViewById(R.id.tv_top_title);
+            tv_top_artis = itemView.findViewById(R.id.tv_top_artis);
+            tv_top_date = itemView.findViewById(R.id.tv_top_date);
         }
     }
-
 }

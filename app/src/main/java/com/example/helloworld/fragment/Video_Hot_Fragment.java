@@ -144,8 +144,6 @@ public class Video_Hot_Fragment extends Fragment {
                 tv_loading_hotvideo.setText("");
                 pb_video_hot.setVisibility(View.INVISIBLE);
                 videoList = getListVideo(json);
-                setTopVideo(videoList.get(0));
-                videoList.remove(0);
                 VideoAdapter videoAdapter = new VideoAdapter(videoList, getContext(), new VideoClick() {
                     @Override
                     public void onClick(Video video) {

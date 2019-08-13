@@ -11,6 +11,7 @@ public class Video implements Serializable {
     private String mp4_url;
 
 
+
     public Video(String title, String date_public, String artis_name, String avt_url, String mp4_url) {
         this.title = title;
         this.date_public = date_public;

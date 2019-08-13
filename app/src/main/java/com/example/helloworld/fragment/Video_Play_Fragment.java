@@ -65,8 +65,6 @@ public class Video_Play_Fragment extends Fragment {
         exoPlayer.setPlayWhenReady(true);
 
         playerView.setPlayer(exoPlayer);
-
-
         return view;
     }
 
