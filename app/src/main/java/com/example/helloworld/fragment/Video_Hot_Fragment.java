@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +23,7 @@ import com.example.helloworld.Entity.Video;
 import com.example.helloworld.Interface.VideoClick;
 import com.example.helloworld.R;
 import com.example.helloworld.Web_API.CallAPI;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,9 +36,14 @@ public class Video_Hot_Fragment extends Fragment {
 
     RecyclerView recyclerView;
     List<Video> videoList;
+    Video top_video;
     String json;
-    TextView tv_loading_hotvideo;
+    TextView tv_loading_hotvideo, tv_top_title, tv_top_artis, tv_top_date;
     String videoUrl;
+    ProgressBar pb_video_hot;
+    LinearLayout layout_top_video;
+    ImageView iv_top_img;
+
 
     public Video_Hot_Fragment(String url) {
         this.videoUrl = url;
@@ -45,8 +54,15 @@ public class Video_Hot_Fragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_hot_video, container, false);
+        pb_video_hot = view.findViewById(R.id.pb_video_hot);
         recyclerView = view.findViewById(R.id.rv_video);
         tv_loading_hotvideo = view.findViewById(R.id.tv_loading_hotvideo);
+        tv_top_title = view.findViewById(R.id.tv_top_title);
+        tv_top_artis = view.findViewById(R.id.tv_top_artis);
+        tv_top_date = view.findViewById(R.id.tv_top_date);
+        layout_top_video = view.findViewById(R.id.layout_top_video);
+        iv_top_img = view.findViewById(R.id.iv_top_img);
+
         videoList = new ArrayList<>();
         new VideoHTTP(videoUrl).execute();
 
@@ -86,6 +102,21 @@ public class Video_Hot_Fragment extends Fragment {
 
     }
 
+    private void setTopVideo(final Video video){
+        tv_top_title.setText(video.getTitle());
+        tv_top_artis.setText(video.getArtis_name());
+        tv_top_date.setText(video.getDate_public());
+        Picasso.with(getContext()).load(video.getAvt_url()).into(iv_top_img);
+        layout_top_video.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), PlayActivity.class);
+                intent.putExtra("video", video);
+                startActivity(intent);
+            }
+        });
+    }
+
 
     class VideoHTTP extends AsyncTask<String, Void, String> {
         String url;
@@ -96,6 +127,8 @@ public class Video_Hot_Fragment extends Fragment {
         @Override
         protected void onPreExecute() {
             tv_loading_hotvideo.setText(getString(R.string.loading));
+            pb_video_hot.setIndeterminate(true);
+            pb_video_hot.setVisibility(View.VISIBLE);
             super.onPreExecute();
         }
 
@@ -104,13 +137,15 @@ public class Video_Hot_Fragment extends Fragment {
              json = new CallAPI().getJsonFromWeb(url);
             return null;
         }
-
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             if(json != null){
                 tv_loading_hotvideo.setText("");
+                pb_video_hot.setVisibility(View.INVISIBLE);
                 videoList = getListVideo(json);
+                setTopVideo(videoList.get(0));
+                videoList.remove(0);
                 VideoAdapter videoAdapter = new VideoAdapter(videoList, getContext(), new VideoClick() {
                     @Override
                     public void onClick(Video video) {
@@ -122,6 +157,7 @@ public class Video_Hot_Fragment extends Fragment {
                 recyclerView.setAdapter(videoAdapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
             }else{
+                pb_video_hot.setVisibility(View.INVISIBLE);
                 tv_loading_hotvideo.setText(getString(R.string.disconnect));
             }
         }

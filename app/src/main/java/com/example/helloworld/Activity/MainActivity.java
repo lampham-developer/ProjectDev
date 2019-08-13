@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.example.helloworld.Entity.Define;
 import com.example.helloworld.R;
 import com.example.helloworld.fragment.About_fragment;
 import com.example.helloworld.Adapter.PagerAdapter;
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                         setTitle(getString(R.string.menu_video));
                         break;
                      case R.id.nav_version :
-                         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame , new Video_Hot_Fragment("https://demo5639557.mockable.io/getVideoHot")).commit();
+                         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame , new Video_Hot_Fragment(Define.HOT_VIDEO_URL)).commit();
                         break;
                      case R.id.nav_about :
                          getSupportFragmentManager().beginTransaction().replace(R.id.content_frame , new About_fragment()).commit();

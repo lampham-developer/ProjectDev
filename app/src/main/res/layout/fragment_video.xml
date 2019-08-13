@@ -15,7 +15,6 @@
         android:background="@color/blue"
         app:tabTextColor="@color/white"
         >
-
     </com.google.android.material.tabs.TabLayout>
 
     <androidx.viewpager.widget.ViewPager

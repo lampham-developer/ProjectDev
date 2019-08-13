@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.helloworld.Activity.ListVideoActivity;
 import com.example.helloworld.Adapter.CategoryAdapter;
+import com.example.helloworld.Entity.Define;
 import com.example.helloworld.Entity.Video;
 import com.example.helloworld.Entity.VideoCategory;
 import com.example.helloworld.Interface.CategoryClick;
@@ -54,7 +55,7 @@ public class Video_Categories_Fragment extends Fragment {
         recyclerView = view.findViewById(R.id.rv_category);
         tv_loading_category = view.findViewById(R.id.tv_loading_category);
         videoCategoryList = new ArrayList<>();
-        new CategoryHTTP("https://demo5639557.mockable.io/getCategory").execute();
+        new CategoryHTTP(Define.CATEGORY_URL).execute();
         return view;
     }
 

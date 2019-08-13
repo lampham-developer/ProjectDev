@@ -13,9 +13,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.helloworld.Adapter.VideoAdapter;
+import com.example.helloworld.Entity.Define;
 import com.example.helloworld.Entity.Video;
 import com.example.helloworld.Interface.VideoClick;
 import com.example.helloworld.R;
@@ -60,14 +63,17 @@ public class PlayActivity extends AppCompatActivity {
     String json;
     List<Video> videoList;
     String category = "null";
-    String url = "https://demo5639557.mockable.io/getVideoHot";
+    String url = Define.HOT_VIDEO_URL;
     CallAPI callAPI;
+    ProgressBar pb_suggest_video;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
         callAPI = new CallAPI();
+
+        pb_suggest_video = findViewById(R.id.pb_suggest_video);
         recyclerView = findViewById(R.id.rv_suggest);
         tv_suggest_video = findViewById(R.id.tv_suggest_video);
         playerView = findViewById(R.id.pv_playing_video);
@@ -134,6 +140,8 @@ public class PlayActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             tv_suggest_video.setText(getString(R.string.loading));
+            pb_suggest_video.setIndeterminate(true);
+            pb_suggest_video.setVisibility(View.VISIBLE);
             super.onPreExecute();
         }
 
@@ -148,6 +156,7 @@ public class PlayActivity extends AppCompatActivity {
             super.onPostExecute(s);
             if(json != null){
                 tv_suggest_video.setText("");
+                pb_suggest_video.setVisibility(View.INVISIBLE);
                 videoList = callAPI.getListVideo(json, category, true);
                 VideoAdapter videoAdapter = new VideoAdapter(videoList, getBaseContext(), new VideoClick() {
                     @Override
@@ -158,6 +167,7 @@ public class PlayActivity extends AppCompatActivity {
                 recyclerView.setAdapter(videoAdapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext(), RecyclerView.VERTICAL, false));
             }else{
+                pb_suggest_video.setVisibility(View.INVISIBLE);
                 tv_suggest_video.setText(getString(R.string.disconnect));
             }
         }
