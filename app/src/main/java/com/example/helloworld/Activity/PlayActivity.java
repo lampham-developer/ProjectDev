@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.helloworld.Adapter.SuggestVideoAdapter;
 import com.example.helloworld.Adapter.VideoAdapter;
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.Entity.Video;
@@ -158,7 +159,7 @@ public class PlayActivity extends AppCompatActivity {
                 tv_suggest_video.setText("");
                 pb_suggest_video.setVisibility(View.INVISIBLE);
                 videoList = callAPI.getListVideo(json, category, true);
-                VideoAdapter videoAdapter = new VideoAdapter(videoList, getBaseContext(), new VideoClick() {
+                SuggestVideoAdapter videoAdapter = new SuggestVideoAdapter(videoList, getBaseContext(), new VideoClick() {
                     @Override
                     public void onClick(Video video) {
                         startPlayVideo(video);

@@ -102,20 +102,6 @@ public class Video_Hot_Fragment extends Fragment {
 
     }
 
-    private void setTopVideo(final Video video){
-        tv_top_title.setText(video.getTitle());
-        tv_top_artis.setText(video.getArtis_name());
-        tv_top_date.setText(video.getDate_public());
-        Picasso.with(getContext()).load(video.getAvt_url()).into(iv_top_img);
-        layout_top_video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), PlayActivity.class);
-                intent.putExtra("video", video);
-                startActivity(intent);
-            }
-        });
-    }
 
 
     class VideoHTTP extends AsyncTask<String, Void, String> {
