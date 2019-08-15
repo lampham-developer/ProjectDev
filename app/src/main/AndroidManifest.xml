@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name=".Activity.ListVideoActivity"></activity>
-        <activity android:name=".Activity.PlayActivity" />
+        <activity android:name=".Activity.PlayActivity"
+            android:configChanges="orientation|screenSize"
+            />
         <activity android:name=".Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

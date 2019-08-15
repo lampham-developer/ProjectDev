@@ -12,4 +12,6 @@
     <color name="background_black">#75575454</color>
     <color name="selected_tab">#86FFFFFF</color>
     <color name="category_title_color">#8BAAA4A4</color>
+    <color name="controller_background">#39636161</color>
+    <color name="invi_color">#00FFFFFF</color>
 </resources>

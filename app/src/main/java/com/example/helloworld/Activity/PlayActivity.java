@@ -4,27 +4,28 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.helloworld.Adapter.SuggestVideoAdapter;
-import com.example.helloworld.Adapter.VideoAdapter;
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.Entity.Video;
 import com.example.helloworld.Interface.VideoClick;
 import com.example.helloworld.R;
 import com.example.helloworld.Web_API.CallAPI;
-import com.example.helloworld.fragment.Video_Play_Fragment;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -36,22 +37,12 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.Vector;
 
 public class PlayActivity extends AppCompatActivity {
 
@@ -64,9 +55,13 @@ public class PlayActivity extends AppCompatActivity {
     String json;
     List<Video> videoList;
     String category = "null";
-    String url = Define.HOT_VIDEO_URL;
+    String url ;
     CallAPI callAPI;
     ProgressBar pb_suggest_video;
+    ImageButton bt_full_screen;
+    int screen_sate;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +69,7 @@ public class PlayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_play);
         callAPI = new CallAPI();
 
+        bt_full_screen = findViewById(R.id.exo_fullscreen_button);
         pb_suggest_video = findViewById(R.id.pb_suggest_video);
         recyclerView = findViewById(R.id.rv_suggest);
         tv_suggest_video = findViewById(R.id.tv_suggest_video);
@@ -85,7 +81,19 @@ public class PlayActivity extends AppCompatActivity {
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white);
 
+        bt_full_screen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(screen_sate == Define.FULL_SCREEN){
+                    setWindowScreen();
+                }else{
+                    setFullScreen();
+                }
+            }
+        });
         video = (Video) getIntent().getSerializableExtra("video");
+        url = getIntent().getStringExtra("url");
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         startPlayVideo(video);
     }
 
@@ -111,15 +119,47 @@ public class PlayActivity extends AppCompatActivity {
         RenderersFactory renderersFactory = new DefaultRenderersFactory(getBaseContext());
 
         exoPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector, loadControl);
-
         String userAgent = Util.getUserAgent(getBaseContext(), getString(R.string.app_name));
         Uri uri = Uri.parse(url);
 
         MediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultDataSourceFactory(getBaseContext(), userAgent)).setExtractorsFactory(new DefaultExtractorsFactory()).createMediaSource(uri);
+
+        playerView.setFitsSystemWindows(true);
         exoPlayer.prepare(mediaSource);
         exoPlayer.setPlayWhenReady(true);
         playerView.setPlayer(exoPlayer);
 
+    }
+
+    private void setFullScreen(){
+        bt_full_screen.setImageResource(R.drawable.ic_fullscreen_skrink);
+        RelativeLayout.LayoutParams params =(RelativeLayout.LayoutParams) playerView.getLayoutParams();
+        params.height = params.MATCH_PARENT;
+        params.width = params.MATCH_PARENT;
+        playerView.setLayoutParams(params);
+        screen_sate = Define.FULL_SCREEN;
+        playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    }
+    private void setWindowScreen(){
+        bt_full_screen.setImageResource(R.drawable.ic_fullscreen_expand);
+        RelativeLayout.LayoutParams params =(RelativeLayout.LayoutParams) playerView.getLayoutParams();
+        params.height = params.WRAP_CONTENT;
+        params.width = params.MATCH_PARENT;
+        playerView.setLayoutParams(params);
+        screen_sate = Define.WINDOW_SCREEN;
+        playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
+        }
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+        }
     }
 
     private void stopPlayVideo(){
@@ -164,7 +204,7 @@ public class PlayActivity extends AppCompatActivity {
                     public void onClick(Video video) {
                         startPlayVideo(video);
                     }
-                });
+                }, video);
                 recyclerView.setAdapter(videoAdapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext(), RecyclerView.VERTICAL, false));
             }else{

@@ -8,8 +8,10 @@ import androidx.appcompat.widget.Toolbar;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.example.helloworld.Entity.Define;
 import com.example.helloworld.R;
 import com.example.helloworld.fragment.Video_Hot_Fragment;
+import com.example.helloworld.fragment.Video_List_Fragment;
 
 public class ListVideoActivity extends AppCompatActivity {
 
@@ -28,7 +30,7 @@ public class ListVideoActivity extends AppCompatActivity {
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.layout_list_video, new Video_Hot_Fragment("https://demo5639557.mockable.io/getItemCategory")).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.layout_list_video, new Video_List_Fragment(Define.CATEGORY_ITEMS_URL)).commit();
 
     }
 

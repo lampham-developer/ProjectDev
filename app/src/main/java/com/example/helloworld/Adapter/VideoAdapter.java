@@ -22,10 +22,10 @@ import java.util.Date;
 import java.util.List;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Viewholder> {
+
     List<Video> videoList;
     Context context;
     VideoClick videoClick;
-
 
     public VideoAdapter(List<Video> videoList, Context context, VideoClick videoClick) {
         this.videoList = videoList;
@@ -35,47 +35,31 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Viewholder> 
 
     @NonNull
     @Override
-    public VideoAdapter.Viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
+    public Viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.video_item_view, parent, false);
-        Viewholder viewholder = new Viewholder(view);
+        VideoAdapter.Viewholder viewholder = new VideoAdapter.Viewholder(view);
         return viewholder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VideoAdapter.Viewholder holder, int position) {
+    public void onBindViewHolder(@NonNull Viewholder holder, int position) {
         final Video video = videoList.get(position);
-        if (position == 0){
-            holder.layout_item_video_view.setVisibility(View.GONE);
-            holder.tv_top_title.setText(video.getTitle());
-            holder.tv_top_artis.setText(checkNull(video.getArtis_name()));
-            holder.tv_top_date.setText(formatDate(video.getDate_public()));
-            Picasso.with(context).load(video.getAvt_url()).into(holder.iv_top_img);
-            holder.layout_top_video.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    videoClick.onClick(video);
-                }
-            });
-        }else{
-            holder.layout_top_video.setVisibility(View.GONE);
-            holder.tv_item_artis.setText(checkNull(video.getArtis_name()));
-            holder.tv_item_date.setText(formatDate(video.getDate_public()));
-            holder.tv_item_title.setText(video.getTitle());
-            Picasso.with(context).load(video.getAvt_url()).into(holder.iv_item_img);
-            holder.layout_item_video_view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    videoClick.onClick(video);
-                }
-            });
-        }
+        holder.layout_top_video.setVisibility(View.GONE);
+        holder.tv_item_artis.setText(checkNull(video.getArtis_name()));
+        holder.tv_item_date.setText(formatDate(video.getDate_public()));
+        holder.tv_item_title.setText(video.getTitle());
+        Picasso.with(context).load(video.getAvt_url()).into(holder.iv_item_img);
+        holder.layout_item_video_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                videoClick.onClick(video);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-
         return videoList.size();
     }
 
@@ -87,7 +71,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Viewholder> 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date output = null;
         try {
-             output= simpleDateFormat.parse(date);
+            output= simpleDateFormat.parse(date);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -101,8 +85,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Viewholder> 
         LinearLayout layout_item_video_view;
         ImageView iv_item_img;
         LinearLayout layout_top_video;
-        ImageView iv_top_img;
-        TextView tv_top_title, tv_top_artis, tv_top_date;
 
         public Viewholder(@NonNull View itemView) {
             super(itemView);
@@ -113,10 +95,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Viewholder> 
             iv_item_img = itemView.findViewById(R.id.iv_item_img);
             layout_item_video_view = itemView.findViewById(R.id.layout_item_video_view);
             layout_top_video = itemView.findViewById(R.id.layout_top_video);
-            iv_top_img = itemView.findViewById(R.id.iv_top_img);
-            tv_top_title = itemView.findViewById(R.id.tv_top_title);
-            tv_top_artis = itemView.findViewById(R.id.tv_top_artis);
-            tv_top_date = itemView.findViewById(R.id.tv_top_date);
         }
     }
 }

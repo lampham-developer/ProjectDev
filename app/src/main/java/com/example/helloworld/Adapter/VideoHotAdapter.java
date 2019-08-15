@@ -9,7 +9,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.helloworld.Entity.Video;
@@ -22,37 +21,43 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class SuggestVideoAdapter extends RecyclerView.Adapter<SuggestVideoAdapter.Viewholder> {
+public class VideoHotAdapter extends RecyclerView.Adapter<VideoHotAdapter.Viewholder> {
     List<Video> videoList;
     Context context;
     VideoClick videoClick;
-    Video playingVideo;
 
-    public SuggestVideoAdapter(List<Video> videoList, Context context, VideoClick videoClick, Video playingVideo) {
+
+    public VideoHotAdapter(List<Video> videoList, Context context, VideoClick videoClick) {
         this.videoList = videoList;
         this.context = context;
         this.videoClick = videoClick;
-        this.playingVideo = playingVideo;
     }
 
     @NonNull
     @Override
-    public Viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public VideoHotAdapter.Viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.video_item_view, parent, false);
-        SuggestVideoAdapter.Viewholder viewholder = new Viewholder(view);
+        Viewholder viewholder = new Viewholder(view);
         return viewholder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull Viewholder holder, int position) {
+    public void onBindViewHolder(@NonNull VideoHotAdapter.Viewholder holder, int position) {
         final Video video = videoList.get(position);
-        if (position == 0) {
+        if (position == 0){
             holder.layout_item_video_view.setVisibility(View.GONE);
-            holder.iv_top_img.setVisibility(View.GONE);
-            holder.tv_top_title.setText(playingVideo.getTitle());
-            holder.tv_top_artis.setText(checkNull(playingVideo.getArtis_name()));
-            holder.tv_top_date.setText(formatDate(playingVideo.getDate_public()));
+            holder.tv_top_title.setText(video.getTitle());
+            holder.tv_top_artis.setText(checkNull(video.getArtis_name()));
+            holder.tv_top_date.setText(formatDate(video.getDate_public()));
+            Picasso.with(context).load(video.getAvt_url()).into(holder.iv_top_img);
+            holder.layout_top_video.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    videoClick.onClick(video);
+                }
+            });
         }else{
             holder.layout_top_video.setVisibility(View.GONE);
             holder.tv_item_artis.setText(checkNull(video.getArtis_name()));
@@ -68,6 +73,12 @@ public class SuggestVideoAdapter extends RecyclerView.Adapter<SuggestVideoAdapte
         }
     }
 
+    @Override
+    public int getItemCount() {
+
+        return videoList.size();
+    }
+
     private String checkNull(String name){
         return name.equals("null") ? "" : name;
     }
@@ -76,39 +87,36 @@ public class SuggestVideoAdapter extends RecyclerView.Adapter<SuggestVideoAdapte
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date output = null;
         try {
-            output= simpleDateFormat.parse(date);
+             output= simpleDateFormat.parse(date);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return new SimpleDateFormat("dd/MM/yyyy").format(output);
     }
 
-    @Override
-    public int getItemCount() {
-        return videoList.size();
-    }
-
     public class Viewholder extends RecyclerView.ViewHolder {
-        TextView tv_item_title, tv_top_title;
-        TextView tv_item_artis, tv_top_artis;
-        TextView tv_item_date, tv_top_date;
+        TextView tv_item_title;
+        TextView tv_item_artis;
+        TextView tv_item_date;
         LinearLayout layout_item_video_view;
-        ImageView iv_item_img, iv_top_img;
+        ImageView iv_item_img;
         LinearLayout layout_top_video;
-        CardView card_item_view;
+        ImageView iv_top_img;
+        TextView tv_top_title, tv_top_artis, tv_top_date;
+
         public Viewholder(@NonNull View itemView) {
             super(itemView);
+
             tv_item_artis = itemView.findViewById(R.id.tv_item_artis);
-            tv_top_artis = itemView.findViewById(R.id.tv_top_artis);
             tv_item_title = itemView.findViewById(R.id.tv_item_title);
-            tv_top_title = itemView.findViewById(R.id.tv_top_title);
             tv_item_date = itemView.findViewById(R.id.tv_item_date);
-            tv_top_date = itemView.findViewById(R.id.tv_top_date);
             iv_item_img = itemView.findViewById(R.id.iv_item_img);
-            iv_top_img = itemView.findViewById(R.id.iv_top_img);
             layout_item_video_view = itemView.findViewById(R.id.layout_item_video_view);
             layout_top_video = itemView.findViewById(R.id.layout_top_video);
-            card_item_view = itemView.findViewById(R.id.card_item_view);
+            iv_top_img = itemView.findViewById(R.id.iv_top_img);
+            tv_top_title = itemView.findViewById(R.id.tv_top_title);
+            tv_top_artis = itemView.findViewById(R.id.tv_top_artis);
+            tv_top_date = itemView.findViewById(R.id.tv_top_date);
         }
     }
 }

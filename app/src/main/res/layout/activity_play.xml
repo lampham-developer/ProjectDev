@@ -3,8 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Activity.PlayActivity"
-    android:orientation="vertical">
+    app:surface_type="texture_view"
+    android:orientation="vertical"
+    >
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_playing"
         android:layout_width="match_parent"
@@ -24,18 +27,29 @@
             <com.google.android.exoplayer2.ui.PlayerView
                 android:id="@+id/pv_playing_video"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"/>
+                android:layout_height="wrap_content"
+                app:use_controller="true"
+                app:fastforward_increment="10000"
+                app:rewind_increment="10000"
+                app:show_timeout="3000"
+                app:controller_layout_id="@layout/playback_control_view"
+                >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/state_holder"
+                    android:visibility="gone"
+                    android:background="#CCDEDEDE">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:textSize="15dp"
+                        android:id="@+id/state_text"/>
+                </RelativeLayout>
+            </com.google.android.exoplayer2.ui.PlayerView>
         </RelativeLayout>
-        <TextView
-            android:id="@+id/tv_header_suggest_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:text="@string/header_list_suggest"
-            android:textColor="@color/black"
-            android:textSize="15dp"
-            />
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -60,6 +74,5 @@
                 android:layout_toLeftOf="@id/tv_suggest_video"
                 />
         </RelativeLayout>
-
     </LinearLayout>
 </LinearLayout>

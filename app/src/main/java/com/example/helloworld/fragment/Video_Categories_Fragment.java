@@ -134,7 +134,7 @@ public class Video_Categories_Fragment extends Fragment {
                     @Override
                     public void onCategoryClick(String category) {
                         Intent intent = new Intent(getContext(), ListVideoActivity.class);
-                        intent.putExtra("title", "null");
+                        intent.putExtra("title", category);
                         startActivity(intent);
                     }
                 });

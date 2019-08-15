@@ -48,7 +48,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Viewho
             holder.layout_category_item_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    categoryClick.onCategoryClick("null");
+                    categoryClick.onCategoryClick(videoCategory.getTitle());
                 }
             });
 

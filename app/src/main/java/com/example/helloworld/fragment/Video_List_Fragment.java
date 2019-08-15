@@ -1,23 +1,22 @@
 package com.example.helloworld.fragment;
 
+
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
 import com.example.helloworld.Activity.PlayActivity;
+import com.example.helloworld.Adapter.VideoAdapter;
 import com.example.helloworld.Adapter.VideoHotAdapter;
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.Entity.Video;
@@ -32,39 +31,37 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Video_Hot_Fragment extends Fragment {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class Video_List_Fragment extends Fragment {
 
     RecyclerView recyclerView;
     List<Video> videoList;
     String json;
-    TextView tv_loading_video_hot;
+    TextView tv_loading_video_list;
     String videoUrl;
-    ProgressBar pb_video_hot;
-
-
-    public Video_Hot_Fragment(String url) {
-        this.videoUrl = url;
+    ProgressBar pb_video_list;
+    public Video_List_Fragment(String videoUrl) {
+        // Required empty public constructor
+        this.videoUrl = videoUrl;
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_hot_video, container, false);
-        pb_video_hot = view.findViewById(R.id.pb_video_hot);
-        recyclerView = view.findViewById(R.id.rv_video_hot);
-        tv_loading_video_hot = view.findViewById(R.id.tv_loading_video_hot);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_video_list, container, false);
+
+        pb_video_list = view.findViewById(R.id.pb_video_list);
+        recyclerView = view.findViewById(R.id.rv_video_list);
+        tv_loading_video_list = view.findViewById(R.id.tv_loading_video_list);
 
         videoList = new ArrayList<>();
-        new VideoHTTP(videoUrl).execute();
+        new Video_List_Fragment.VideoHTTP(videoUrl).execute();
 
         return view;
     }
-
-    public static Video_Hot_Fragment newInstance(String videoUrl) {
-        return new Video_Hot_Fragment(videoUrl);
-    }
-
 
     private List<Video> getListVideo(String json){
         List<Video> currentList = new ArrayList<>();
@@ -104,40 +101,41 @@ public class Video_Hot_Fragment extends Fragment {
 
         @Override
         protected void onPreExecute() {
-            tv_loading_video_hot.setText(getString(R.string.loading));
-            pb_video_hot.setIndeterminate(true);
-            pb_video_hot.setVisibility(View.VISIBLE);
+            tv_loading_video_list.setText(getString(R.string.loading));
+            pb_video_list.setIndeterminate(true);
+            pb_video_list.setVisibility(View.VISIBLE);
             super.onPreExecute();
         }
 
         @Override
         protected String doInBackground(String... strings) {
-             json = new CallAPI().getJsonFromWeb(url);
+            json = new CallAPI().getJsonFromWeb(url);
             return null;
         }
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             if(json != null){
-                tv_loading_video_hot.setText("");
-                pb_video_hot.setVisibility(View.INVISIBLE);
+                tv_loading_video_list.setText("");
+                pb_video_list.setVisibility(View.INVISIBLE);
                 videoList = getListVideo(json);
-                VideoHotAdapter videoHotAdapter = new VideoHotAdapter(videoList, getContext(), new VideoClick() {
+                VideoAdapter videoAdapter = new VideoAdapter(videoList, getContext(), new VideoClick() {
                     @Override
                     public void onClick(Video video) {
                         Intent intent = new Intent(getContext(), PlayActivity.class);
                         intent.putExtra("video", video);
-                        intent.putExtra("url", Define.HOT_VIDEO_URL);
+                        intent.putExtra("url", Define.CATEGORY_ITEMS_URL);
                         startActivity(intent);
                     }
                 });
-                recyclerView.setAdapter(videoHotAdapter);
+                recyclerView.setAdapter(videoAdapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
             }else{
-                pb_video_hot.setVisibility(View.INVISIBLE);
-                tv_loading_video_hot.setText(getString(R.string.disconnect));
+                pb_video_list.setVisibility(View.INVISIBLE);
+                tv_loading_video_list.setText(getString(R.string.disconnect));
             }
         }
 
     }
+
 }
