@@ -4,7 +4,10 @@ public class Define {
 
     public static final int FULL_SCREEN = 0;
     public static final int WINDOW_SCREEN = 1;
-    public static final int SWIPE_THRESHOLD = 10;
+
+
+    public static final int SWIPE_THRESHOLD_X = 20;
+    public static final int SWIPE_THRESHOLD_Y = 20;
     public static final int SWIPE_VELO_THRESHOLD = 1;
 
 

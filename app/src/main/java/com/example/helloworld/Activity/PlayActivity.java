@@ -3,10 +3,12 @@ package com.example.helloworld.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -41,6 +43,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import com.google.android.exoplayer2.ui.DefaultTimeBar;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
@@ -56,6 +59,7 @@ public class PlayActivity extends AppCompatActivity {
     ExoPlayer exoPlayer;
     RecyclerView recyclerView;
     TextView tv_suggest_video;
+    TextView tv_position;
     String json;
     List<Video> videoList;
     String category = "null";
@@ -69,7 +73,10 @@ public class PlayActivity extends AppCompatActivity {
     AudioManager audioManager;
     GestureDetector gestureDetector;
     long currentPosition;
+    Handler handle;
 
+    int firstX, firstY;
+    boolean isChangePotition = true, isChangeVolume = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,10 +88,11 @@ public class PlayActivity extends AppCompatActivity {
         pb_suggest_video = findViewById(R.id.pb_suggest_video);
         recyclerView = findViewById(R.id.rv_suggest);
         tv_suggest_video = findViewById(R.id.tv_suggest_video);
+        tv_position = findViewById(R.id.tv_position);
         playerView = findViewById(R.id.pv_playing_video);
-        audioManager =(AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         toolbar = findViewById(R.id.toolbar_playing);
-
+        handle = new Handler();
 
         gestureDetector = new GestureDetector(getBaseContext(), new MyGesture());
         setSupportActionBar(toolbar);
@@ -108,15 +116,42 @@ public class PlayActivity extends AppCompatActivity {
         playerView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                gestureDetector.onTouchEvent(motionEvent);
+//                gestureDetector.onTouchEvent(motionEvent);
+
+                switch (motionEvent.getActionMasked()){
+                    case MotionEvent.ACTION_DOWN:
+                        firstX =(int) motionEvent.getX();
+                        firstY =(int) motionEvent.getY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        if (Math.abs((int) motionEvent.getY() - firstY) > Define.SWIPE_THRESHOLD_Y) isChangePotition = false;
+                        if (Math.abs((int) motionEvent.getX() - firstX) > Define.SWIPE_THRESHOLD_X) isChangeVolume = false;
+                        if(Math.abs((int) motionEvent.getY() - firstY) < Define.SWIPE_THRESHOLD_Y && isChangePotition){
+                            exoPlayer.seekTo(exoPlayer.getCurrentPosition() + ((int)motionEvent.getX() - firstX)*100);
+                            tv_position.setText(String.valueOf(exoPlayer.getCurrentPosition()));
+                            firstX =(int) motionEvent.getX();
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        isChangePotition = true;
+                        isChangeVolume = true;
+                        break;
+                }
+                playerView.showController();
                 return true;
             }
         });
 
-        video = (Video) getIntent().getSerializableExtra("video");
-        url = getIntent().getStringExtra("url");
+        video = (Video) getIntent().getSerializableExtra(getString(R.string.intent_video));
+        url = getIntent().getStringExtra(getString(R.string.intent_url));
 
         startPlayVideo(video);
+
+        if(getIntent().getStringExtra(getString(R.string.intent_category)).equals("hot"))setFullScreen();
+
+
+        currentPosition = exoPlayer.getCurrentPosition();
+        updateTimebarAction.run();
     }
 
     @Override
@@ -133,6 +168,7 @@ public class PlayActivity extends AppCompatActivity {
     private void startPlayVideo(Video video) {
         stopPlayVideo();
         recyclerView.setAdapter(null);
+        tv_position.setVisibility(View.INVISIBLE);
         new VideoHTTP(url).execute();
         setTitle(video.getTitle());
         String video_url = video.getMp4_url();
@@ -190,6 +226,7 @@ public class PlayActivity extends AppCompatActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        recyclerView.setAdapter(videoAdapter);
         super.onConfigurationChanged(newConfig);
     }
 
@@ -234,37 +271,84 @@ public class PlayActivity extends AppCompatActivity {
                 tv_suggest_video.setText(getString(R.string.disconnect));
             }
         }
-
     }
 
-    class MyGesture extends GestureDetector.SimpleOnGestureListener{
+    private void updateTimebar(long position) {
+        tv_position.setText(String.valueOf(position));
+        handle.postDelayed(updateTimebarAction, 100);
+    }
+
+    private final Runnable updateTimebarAction = new Runnable() {
+        @Override
+        public void run() {
+            updateTimebar(exoPlayer.getCurrentPosition());
+        }
+    };
+
+    public static int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
+
+    public static int getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
+
+    class MyGesture extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            playerView.showController();
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+
+            if(e.getX() < getScreenWidth()/3) exoPlayer.seekTo(exoPlayer.getCurrentPosition() - 10000);
+            if(e.getX() > (getScreenWidth()*2/3)) exoPlayer.seekTo(exoPlayer.getCurrentPosition() + 10000);
+
+            playerView.showController();
+            return super.onDoubleTap(e);
+        }
+
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            tv_position.setVisibility(View.VISIBLE);
             //trai qua phai
-            if (e2.getX() - e1.getX() > Define.SWIPE_THRESHOLD && Math.abs(velocityX) > Define.SWIPE_VELO_THRESHOLD){
+            if (e2.getX() - e1.getX() > Define.SWIPE_THRESHOLD_X && Math.abs(velocityX) > Define.SWIPE_VELO_THRESHOLD) {
                 currentPosition = exoPlayer.getCurrentPosition();
                 long distance = (long) (e2.getX() - e1.getX());
+                currentPosition = currentPosition + distance * 100;
+                tv_position.setText(String.valueOf(currentPosition / 1000));
+                exoPlayer.seekTo(currentPosition);
                 playerView.showController();
-                exoPlayer.seekTo(currentPosition + distance*100);
             }
             //phai qua trai
-            if (e1.getX() - e2.getX() > Define.SWIPE_THRESHOLD && Math.abs(velocityX) > Define.SWIPE_VELO_THRESHOLD){
+            if (e1.getX() - e2.getX() > Define.SWIPE_THRESHOLD_X && Math.abs(velocityX) > Define.SWIPE_VELO_THRESHOLD) {
                 currentPosition = exoPlayer.getCurrentPosition();
                 long distance = (long) (e1.getX() - e2.getX());
+                currentPosition = currentPosition - distance * 100;
+                tv_position.setText(String.valueOf(currentPosition / 1000));
+                exoPlayer.seekTo(currentPosition);
                 playerView.showController();
-                exoPlayer.seekTo(currentPosition - distance*100);
+
             }
             //tren xuong duoi
-            if (e2.getY() - e1.getY() > Define.SWIPE_THRESHOLD && Math.abs(velocityY) > Define.SWIPE_VELO_THRESHOLD){
-
+            if (e2.getY() - e1.getY() > Define.SWIPE_THRESHOLD_Y && Math.abs(velocityY) > Define.SWIPE_VELO_THRESHOLD) {
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_LOWER,
+                        AudioManager.FLAG_PLAY_SOUND);
             }
             //duoi len tren
-            if (e1.getY() - e2.getY() > Define.SWIPE_THRESHOLD && Math.abs(velocityY) > Define.SWIPE_VELO_THRESHOLD){
-
+            if (e1.getY() - e2.getY() > Define.SWIPE_THRESHOLD_Y && Math.abs(velocityY) > Define.SWIPE_VELO_THRESHOLD) {
+                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_RAISE,
+                        AudioManager.FLAG_PLAY_SOUND);
             }
 
             return super.onFling(e1, e2, velocityX, velocityY);
         }
     }
+
 
 }

@@ -126,8 +126,9 @@ public class Video_Hot_Fragment extends Fragment {
                     @Override
                     public void onClick(Video video) {
                         Intent intent = new Intent(getContext(), PlayActivity.class);
-                        intent.putExtra("video", video);
-                        intent.putExtra("url", Define.HOT_VIDEO_URL);
+                        intent.putExtra(getString(R.string.intent_video), video);
+                        intent.putExtra(getString(R.string.intent_url), Define.HOT_VIDEO_URL);
+                        intent.putExtra(getString(R.string.intent_category), "hot");
                         startActivity(intent);
                     }
                 });

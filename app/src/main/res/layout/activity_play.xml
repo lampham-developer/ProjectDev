@@ -12,7 +12,7 @@
         android:id="@+id/toolbar_playing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/blue"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         >
     </androidx.appcompat.widget.Toolbar>
@@ -50,6 +50,16 @@
                 </RelativeLayout>
             </com.google.android.exoplayer2.ui.PlayerView>
         </RelativeLayout>
+        <TextView
+            android:id="@+id/tv_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:textSize="10dp"
+            android:background="@color/white"
+            android:textColor="@color/black"
+            android:layout_centerInParent="true"
+            />
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
