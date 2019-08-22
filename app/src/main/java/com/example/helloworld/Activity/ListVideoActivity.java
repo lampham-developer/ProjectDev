@@ -1,16 +1,15 @@
 package com.example.helloworld.Activity;
 
+import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.os.Bundle;
-import android.view.MenuItem;
-
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.R;
-import com.example.helloworld.fragment.Video_Hot_Fragment;
 import com.example.helloworld.fragment.Video_List_Fragment;
 
 public class ListVideoActivity extends AppCompatActivity {

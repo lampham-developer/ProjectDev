@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.helloworld.Adapter.PagerAdapter;
+import com.example.helloworld.Entity.Define;
 import com.example.helloworld.R;
 import com.google.android.material.tabs.TabLayout;
 
@@ -28,7 +29,7 @@ public class Video_fragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_video,container, false);
-        video_hot_fragment = new Video_Hot_Fragment("https://demo5639557.mockable.io/getVideoHot");
+        video_hot_fragment = new Video_Hot_Fragment(Define.HOT_VIDEO_URL);
         video_categories_fragment = new Video_Categories_Fragment();
 
         tabLayout = view.findViewById(R.id.video_tab_layout);
@@ -43,8 +44,5 @@ public class Video_fragment extends Fragment {
         return view;
     }
 
-    public static Video_fragment newInstance() {
-        return new Video_fragment();
-    }
 
 }

@@ -12,6 +12,11 @@
     <string name="menu_home">Home</string>
 
     //Video
+    <string name="video_title">title</string>
+    <string name="video_artist_name">artist_name</string>
+    <string name="video_date_published">date_published</string>
+    <string name="video_avatar">avatar</string>
+    <string name="video_file_mp4">file_mp4</string>
 
     //Fragments String
     <string name="header_list_recommen">Recommended</string>
@@ -24,4 +29,5 @@
     <string name="intent_video">video</string>
     <string name="intent_url">url</string>
     <string name="intent_category">category</string>
+    <string name="itent_category_hot">hot_video</string>
 </resources>

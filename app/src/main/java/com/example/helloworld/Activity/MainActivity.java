@@ -1,5 +1,8 @@
 package com.example.helloworld.Activity;
 
+import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,28 +10,18 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
-
-import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
 
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.R;
 import com.example.helloworld.fragment.About_fragment;
-import com.example.helloworld.Adapter.PagerAdapter;
-import com.example.helloworld.fragment.Video_Categories_Fragment;
 import com.example.helloworld.fragment.Video_Hot_Fragment;
 import com.example.helloworld.fragment.Video_fragment;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     NavigationView navigationView;
     Toolbar toolbar;
-
-    Video_fragment video_fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +33,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
-        video_fragment = new Video_fragment();
-
-        setFragment(video_fragment);
+        setFragment(new Video_fragment());
         setTitle(getString(R.string.menu_home));
 
         ActionBar actionbar = getSupportActionBar();
@@ -55,11 +46,11 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (menuItem.getItemId()){
                     case R.id.nav_home :
-                        setFragment(video_fragment);
+                        setFragment(new Video_fragment());
                         setTitle(getString(R.string.menu_home));
                         break;
                     case R.id.nav_video :
-                        setFragment(video_fragment);
+                        setFragment(new Video_fragment());
                         setTitle(getString(R.string.menu_video));
                         break;
                      case R.id.nav_version :
@@ -94,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d("Main ", "getFragment: " + e.getMessage());
         }
     }
 }

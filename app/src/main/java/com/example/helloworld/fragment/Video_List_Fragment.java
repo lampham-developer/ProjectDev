@@ -4,20 +4,18 @@ package com.example.helloworld.fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.helloworld.Activity.PlayActivity;
 import com.example.helloworld.Adapter.VideoAdapter;
-import com.example.helloworld.Adapter.VideoHotAdapter;
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.Entity.Video;
 import com.example.helloworld.Interface.VideoClick;
@@ -72,11 +70,11 @@ public class Video_List_Fragment extends Fragment {
             while (jsonArray.getJSONObject(count) != null){
                 JSONObject jsonObject = jsonArray.getJSONObject(count);
 
-                String title = jsonObject.getString("title");
-                String artis = jsonObject.getString("artist_name");
-                String date = jsonObject.getString("date_published");
-                String avt_url = jsonObject.getString("avatar");
-                String mp4_url = jsonObject.getString("file_mp4");
+                String title = jsonObject.getString(getString(R.string.video_title));
+                String artis = jsonObject.getString(getString(R.string.video_artist_name));
+                String date = jsonObject.getString(getString(R.string.video_date_published));
+                String avt_url = jsonObject.getString(getString(R.string.video_avatar));
+                String mp4_url = jsonObject.getString(getString(R.string.video_file_mp4));
 
                 Video video = new Video(title, date, artis, avt_url, mp4_url);
                 currentList.add(video);
@@ -123,8 +121,8 @@ public class Video_List_Fragment extends Fragment {
                     @Override
                     public void onClick(Video video) {
                         Intent intent = new Intent(getContext(), PlayActivity.class);
-                        intent.putExtra("video", video);
-                        intent.putExtra("url", Define.CATEGORY_ITEMS_URL);
+                        intent.putExtra(getString(R.string.intent_video), video);
+                        intent.putExtra(getString(R.string.intent_url), Define.CATEGORY_ITEMS_URL);
                         startActivity(intent);
                     }
                 });

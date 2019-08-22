@@ -128,7 +128,7 @@ public class Video_Hot_Fragment extends Fragment {
                         Intent intent = new Intent(getContext(), PlayActivity.class);
                         intent.putExtra(getString(R.string.intent_video), video);
                         intent.putExtra(getString(R.string.intent_url), Define.HOT_VIDEO_URL);
-                        intent.putExtra(getString(R.string.intent_category), "hot");
+                        intent.putExtra(getString(R.string.intent_category), getString(R.string.itent_category_hot));
                         startActivity(intent);
                     }
                 });
