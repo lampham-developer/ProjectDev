@@ -1,5 +1,6 @@
 package com.example.helloworld.Activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -45,6 +47,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class PlayActivity extends AppCompatActivity {
@@ -56,7 +59,7 @@ public class PlayActivity extends AppCompatActivity {
     ExoPlayer exoPlayer;
     RecyclerView recyclerView;
     TextView tv_suggest_video;
-    TextView tv_position;
+
     String json;
     List<Video> videoList;
     String category = "null";
@@ -72,8 +75,13 @@ public class PlayActivity extends AppCompatActivity {
     Handler handle;
 
     int firstX, firstY;
-    boolean isChangePotition = true, isChangeVolume = true;
+    boolean isChangePotision = true, isChangeVolume = true;
 
+    RelativeLayout layout_forward_state;
+    ImageView img_forward_state;
+    TextView tv_cur_position, tv_duration;
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +92,12 @@ public class PlayActivity extends AppCompatActivity {
         pb_suggest_video = findViewById(R.id.pb_suggest_video);
         recyclerView = findViewById(R.id.rv_suggest);
         tv_suggest_video = findViewById(R.id.tv_suggest_video);
-        tv_position = findViewById(R.id.tv_position);
+
+        layout_forward_state = findViewById(R.id.layout_forward_state);
+        img_forward_state = findViewById(R.id.img_forward_state);
+        tv_cur_position = findViewById(R.id.tv_cur_position);
+        tv_duration = findViewById(R.id.tv_duration);
+
         playerView = findViewById(R.id.pv_playing_video);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         toolbar = findViewById(R.id.toolbar_playing);
@@ -110,24 +123,37 @@ public class PlayActivity extends AppCompatActivity {
         playerView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-//                gestureDetector.onTouchEvent(motionEvent);
 
-                switch (motionEvent.getActionMasked()){
+                switch (motionEvent.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN:
-                        firstX =(int) motionEvent.getX();
-                        firstY =(int) motionEvent.getY();
+                        tv_duration.setText(formatDuration(exoPlayer.getDuration()));
+                        firstX = (int) motionEvent.getX();
+                        firstY = (int) motionEvent.getY();
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        if (Math.abs((int) motionEvent.getY() - firstY) > Define.SWIPE_THRESHOLD_Y) isChangePotition = false;
-                        if (Math.abs((int) motionEvent.getX() - firstX) > Define.SWIPE_THRESHOLD_X) isChangeVolume = false;
-                        if(Math.abs((int) motionEvent.getY() - firstY) < Define.SWIPE_THRESHOLD_Y && isChangePotition){
-                            exoPlayer.seekTo(exoPlayer.getCurrentPosition() + ((int)motionEvent.getX() - firstX)*100);
-                            tv_position.setText(String.valueOf(exoPlayer.getCurrentPosition()));
-                            firstX =(int) motionEvent.getX();
+                        if (Math.abs((int) motionEvent.getY() - firstY) > Define.SWIPE_THRESHOLD_Y)
+                            isChangePotision = false;
+                        if (Math.abs((int) motionEvent.getX() - firstX) > Define.SWIPE_THRESHOLD_X)
+                            isChangeVolume = false;
+                        if (isChangePotision) {
+                            layout_forward_state.setVisibility(View.VISIBLE);
+
+                            if((int)motionEvent.getX() - firstX < 0)
+                                img_forward_state.setImageResource(R.drawable.ic_fast_rewind);
+                            if((int)motionEvent.getX() - firstX > 0)
+                                img_forward_state.setImageResource(R.drawable.ic_fast_forward);
+
+                            currentPosition = exoPlayer.getCurrentPosition() + ((int) motionEvent.getX() - firstX) * 300;
+                            if (currentPosition >= 0 && currentPosition <= exoPlayer.getDuration()) {
+                                exoPlayer.seekTo(currentPosition);
+                                tv_cur_position.setText(formatDuration(currentPosition));
+                            }
+                            firstX = (int) motionEvent.getX();
                         }
                         break;
                     case MotionEvent.ACTION_UP:
-                        isChangePotition = true;
+                        layout_forward_state.setVisibility(View.INVISIBLE);
+                        isChangePotision = true;
                         isChangeVolume = true;
                         break;
                 }
@@ -138,17 +164,12 @@ public class PlayActivity extends AppCompatActivity {
 
         video = (Video) getIntent().getSerializableExtra(getString(R.string.intent_video));
         url = getIntent().getStringExtra(getString(R.string.intent_url));
-
-        startPlayVideo(video);
-
         if(getIntent().getStringExtra(getString(R.string.intent_category)) != null
                 && getIntent().getStringExtra(getString(R.string.intent_category)).equals(getString(R.string.itent_category_hot)))
-                    setFullScreen();
+            setFullScreen();
 
-
-
+        startPlayVideo(video);
         currentPosition = exoPlayer.getCurrentPosition();
-        updateTimebarAction.run();
     }
 
     @Override
@@ -165,7 +186,6 @@ public class PlayActivity extends AppCompatActivity {
     private void startPlayVideo(Video video) {
         stopPlayVideo();
         recyclerView.setAdapter(null);
-        tv_position.setVisibility(View.INVISIBLE);
         new VideoHTTP(url).execute();
         setTitle(video.getTitle());
         String video_url = video.getMp4_url();
@@ -270,16 +290,8 @@ public class PlayActivity extends AppCompatActivity {
         }
     }
 
-    private void updateTimebar(long position) {
-        tv_position.setText(String.valueOf(position));
-        handle.postDelayed(updateTimebarAction, 100);
+    private String formatDuration(long duration){
+        return new SimpleDateFormat("mm:ss").format(duration);
     }
-
-    private final Runnable updateTimebarAction = new Runnable() {
-        @Override
-        public void run() {
-            updateTimebar(exoPlayer.getCurrentPosition());
-        }
-    };
 
 }
