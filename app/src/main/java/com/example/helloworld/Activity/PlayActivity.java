@@ -98,6 +98,7 @@ public class PlayActivity extends AppCompatActivity {
         tv_cur_position = findViewById(R.id.tv_cur_position);
         tv_duration = findViewById(R.id.tv_duration);
 
+
         playerView = findViewById(R.id.pv_playing_video);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         toolbar = findViewById(R.id.toolbar_playing);
@@ -150,6 +151,10 @@ public class PlayActivity extends AppCompatActivity {
                             }
                             firstX = (int) motionEvent.getX();
                         }
+
+                        if (isChangeVolume){
+
+                        }
                         break;
                     case MotionEvent.ACTION_UP:
                         layout_forward_state.setVisibility(View.INVISIBLE);
@@ -170,6 +175,7 @@ public class PlayActivity extends AppCompatActivity {
 
         startPlayVideo(video);
         currentPosition = exoPlayer.getCurrentPosition();
+
     }
 
     @Override
@@ -293,5 +299,4 @@ public class PlayActivity extends AppCompatActivity {
     private String formatDuration(long duration){
         return new SimpleDateFormat("mm:ss").format(duration);
     }
-
 }

@@ -13,7 +13,8 @@
         app:tabGravity="fill"
         app:tabMode="fixed"
         android:background="@color/blue"
-        app:tabTextColor="@color/white"
+        app:tabTextColor="@color/black"
+        app:tabBackground="@drawable/tab_background"
         >
     </com.google.android.material.tabs.TabLayout>
 
