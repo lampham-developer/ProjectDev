@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -36,7 +38,9 @@ import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.RenderersFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -74,12 +78,20 @@ public class PlayActivity extends AppCompatActivity {
     long currentPosition;
     Handler handle;
 
-    int firstX, firstY;
+    int firstX, firstY, lastX, lastY;
     boolean isChangePotision = true, isChangeVolume = true;
 
     RelativeLayout layout_forward_state;
     ImageView img_forward_state;
     TextView tv_cur_position, tv_duration;
+
+    LinearLayout layout_volume;
+    TextView tv_cur_volume;
+    ImageView img_volume;
+    int maxVolume;
+    double volumeStep;
+    int currentVolume;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -98,9 +110,18 @@ public class PlayActivity extends AppCompatActivity {
         tv_cur_position = findViewById(R.id.tv_cur_position);
         tv_duration = findViewById(R.id.tv_duration);
 
+        layout_volume = findViewById(R.id.layout_volume);
+        tv_cur_volume = findViewById(R.id.tv_cur_volume);
+        img_volume = findViewById(R.id.img_volume);
+
 
         playerView = findViewById(R.id.pv_playing_video);
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        volumeStep = 100 / maxVolume;
+        currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        currentVolume = (int) (currentVolume * volumeStep);
+
         toolbar = findViewById(R.id.toolbar_playing);
         handle = new Handler();
         setSupportActionBar(toolbar);
@@ -130,34 +151,45 @@ public class PlayActivity extends AppCompatActivity {
                         tv_duration.setText(formatDuration(exoPlayer.getDuration()));
                         firstX = (int) motionEvent.getX();
                         firstY = (int) motionEvent.getY();
+                        lastX = (int) motionEvent.getX();
+                        lastY = (int) motionEvent.getY();
                         break;
                     case MotionEvent.ACTION_MOVE:
                         if (Math.abs((int) motionEvent.getY() - firstY) > Define.SWIPE_THRESHOLD_Y)
                             isChangePotision = false;
                         if (Math.abs((int) motionEvent.getX() - firstX) > Define.SWIPE_THRESHOLD_X)
                             isChangeVolume = false;
-                        if (isChangePotision) {
+                        if (Math.abs((int) motionEvent.getX() - firstX) > Define.SWIPE_THRESHOLD_X && isChangePotision) {
                             layout_forward_state.setVisibility(View.VISIBLE);
 
-                            if((int)motionEvent.getX() - firstX < 0)
+                            if ((int) motionEvent.getX() - lastX < 0)
                                 img_forward_state.setImageResource(R.drawable.ic_fast_rewind);
-                            if((int)motionEvent.getX() - firstX > 0)
+                            if ((int) motionEvent.getX() - lastX > 0)
                                 img_forward_state.setImageResource(R.drawable.ic_fast_forward);
 
-                            currentPosition = exoPlayer.getCurrentPosition() + ((int) motionEvent.getX() - firstX) * 300;
+                            currentPosition = exoPlayer.getCurrentPosition() + ((int) motionEvent.getX() - lastX) * 200;
                             if (currentPosition >= 0 && currentPosition <= exoPlayer.getDuration()) {
                                 exoPlayer.seekTo(currentPosition);
                                 tv_cur_position.setText(formatDuration(currentPosition));
                             }
-                            firstX = (int) motionEvent.getX();
+                            lastX = (int) motionEvent.getX();
                         }
 
-                        if (isChangeVolume){
-
+                        if (Math.abs((int) motionEvent.getY() - firstY) > Define.SWIPE_THRESHOLD_Y && isChangeVolume) {
+                            layout_volume.setVisibility(View.VISIBLE);
+                            if ((int) motionEvent.getY() - lastY > 0 && 0 < currentVolume) {
+                                currentVolume--;
+                            }
+                            if ((int) motionEvent.getY() - lastY < 0 && currentVolume < 100) {
+                                currentVolume++;
+                            }
+                            lastY = (int) motionEvent.getY();
+                            setChangeVolume();
                         }
                         break;
                     case MotionEvent.ACTION_UP:
                         layout_forward_state.setVisibility(View.INVISIBLE);
+                        layout_volume.setVisibility(View.INVISIBLE);
                         isChangePotision = true;
                         isChangeVolume = true;
                         break;
@@ -169,7 +201,7 @@ public class PlayActivity extends AppCompatActivity {
 
         video = (Video) getIntent().getSerializableExtra(getString(R.string.intent_video));
         url = getIntent().getStringExtra(getString(R.string.intent_url));
-        if(getIntent().getStringExtra(getString(R.string.intent_category)) != null
+        if (getIntent().getStringExtra(getString(R.string.intent_category)) != null
                 && getIntent().getStringExtra(getString(R.string.intent_category)).equals(getString(R.string.itent_category_hot)))
             setFullScreen();
 
@@ -296,7 +328,13 @@ public class PlayActivity extends AppCompatActivity {
         }
     }
 
-    private String formatDuration(long duration){
+    private String formatDuration(long duration) {
         return new SimpleDateFormat("mm:ss").format(duration);
+    }
+
+    private void setChangeVolume() {
+        int volume = (int) (currentVolume / volumeStep);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+        tv_cur_volume.setText(String.valueOf(currentVolume));
     }
 }
