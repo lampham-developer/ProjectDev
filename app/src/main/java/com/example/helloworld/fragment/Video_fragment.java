@@ -15,20 +15,19 @@ import com.google.android.material.tabs.TabLayout;
 
 public class Video_fragment extends Fragment {
 
-    public Video_fragment() {
-    }
-
     Video_Hot_Fragment video_hot_fragment;
     Video_Categories_Fragment video_categories_fragment;
     PagerAdapter pagerAdapter;
     TabLayout tabLayout;
     ViewPager viewPager;
 
+    public Video_fragment() {
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_video,container, false);
+        View view = inflater.inflate(R.layout.fragment_tab,container, false);
         video_hot_fragment = new Video_Hot_Fragment(Define.HOT_VIDEO_URL);
         video_categories_fragment = new Video_Categories_Fragment();
 

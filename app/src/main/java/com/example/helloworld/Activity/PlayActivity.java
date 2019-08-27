@@ -337,4 +337,16 @@ public class PlayActivity extends AppCompatActivity {
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
         tv_cur_volume.setText(String.valueOf(currentVolume));
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        exoPlayer.setPlayWhenReady(false);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        exoPlayer.setPlayWhenReady(true);
+    }
 }
