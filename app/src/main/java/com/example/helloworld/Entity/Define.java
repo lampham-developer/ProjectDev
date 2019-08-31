@@ -14,5 +14,5 @@ public class Define {
     public static final String CATEGORY_URL = "https://demo5639557.mockable.io/getCategory";
     public static final String CATEGORY_ITEMS_URL = "https://demo5639557.mockable.io/getItemCategory";
 
-
+    public static final String SERVER_URL = "https://vnexpress.net/";
 }

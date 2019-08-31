@@ -1,27 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/video_tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/tab_size"
         android:layout_gravity="left"
+        android:background="@drawable/custom_tab_border"
         app:tabGravity="fill"
+        app:tabIndicatorColor="@color/blue"
         app:tabMode="fixed"
-        android:background="@color/blue"
-        app:tabTextColor="@color/black"
-        app:tabBackground="@drawable/tab_background"
-        >
-    </com.google.android.material.tabs.TabLayout>
+        app:tabSelectedTextColor="@color/blue"
+        app:tabTextColor="@color/black"></com.google.android.material.tabs.TabLayout>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/video_tab_viewpager"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/video_tab_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </androidx.viewpager.widget.ViewPager>
+        <TextView
+            android:id="@+id/tv_loading_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Loading"
+            android:textSize="20dp" />
 
-    </androidx.viewpager.widget.ViewPager>
+        <ProgressBar
+            android:id="@+id/pb_loading_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@id/tv_loading_tab" />
+
+    </RelativeLayout>
 </LinearLayout>

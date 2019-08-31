@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.R;
+import com.example.helloworld.Rss.News_Fragment;
 import com.example.helloworld.fragment.About_fragment;
 import com.example.helloworld.fragment.Video_Hot_Fragment;
 import com.example.helloworld.fragment.Video_fragment;
@@ -33,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
-        setFragment(new Video_fragment());
-        setTitle(getString(R.string.menu_home));
+        setFragment(new News_Fragment());
+        setTitle(getString(R.string.menu_news));
 
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
@@ -46,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (menuItem.getItemId()){
                     case R.id.nav_home :
-                        setFragment(new Video_fragment());
-                        setTitle(getString(R.string.menu_home));
+                        setFragment(new News_Fragment());
+                        setTitle(getString(R.string.menu_news));
                         break;
                     case R.id.nav_video :
                         setFragment(new Video_fragment());

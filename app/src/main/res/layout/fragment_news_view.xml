@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/layout_category"
-    >
+    android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_category"
+        android:id="@+id/rv_news"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></androidx.recyclerview.widget.RecyclerView>
+        android:layout_height="match_parent">
 
+    </androidx.recyclerview.widget.RecyclerView>
     <TextView
-        android:id="@+id/tv_loading_category"
+        android:id="@+id/tv_loading_news"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="Loading"
         android:textSize="20dp" />
+
     <ProgressBar
-        android:id="@+id/pb_loading_category"
+        android:id="@+id/pb_loading_news"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_toLeftOf="@+id/tv_loading_category"
-        />
-
+        android:layout_toLeftOf="@id/tv_loading_news" />
 </RelativeLayout>

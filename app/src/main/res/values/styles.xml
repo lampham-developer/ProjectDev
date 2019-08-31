@@ -8,10 +8,5 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="CustomTabLayout" parent="Widget.MaterialComponents.TabLayout">
-    <item name="tabIndicatorColor">@color/colorPrimary</item>
-        <item name="android:background">@color/black</item>
-        <item name="android:selectableItemBackground">@color/white</item>
-    </style>
 
 </resources>

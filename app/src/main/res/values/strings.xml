@@ -3,13 +3,13 @@
 
     <string name="video_tab_1">Hot Videos</string>
     <string name="video_tab_2">Categories</string>
-    <string name="loading">Loading Videos</string>
+    <string name="loading">Loading</string>
     <string name="disconnect">Failed to connect internet</string>
     //menu item
     <string name="menu_video">Videos</string>
     <string name="menu_version">Version</string>
     <string name="menu_about">About us</string>
-    <string name="menu_home">Home</string>
+    <string name="menu_news">News</string>
 
     //Video
     <string name="video_title">title</string>
@@ -30,4 +30,7 @@
     <string name="intent_url">url</string>
     <string name="intent_category">category</string>
     <string name="itent_category_hot">hot_video</string>
+
+    //rss
+    <string name="key_goc_nhin">goc-nhin</string>
 </resources>

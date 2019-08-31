@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,6 +38,7 @@ public class Video_Categories_Fragment extends Fragment {
 
     RecyclerView recyclerView;
     TextView tv_loading_category;
+    ProgressBar pb_loading;
     String json;
     List<VideoCategory> videoCategoryList;
 
@@ -54,6 +56,8 @@ public class Video_Categories_Fragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_categories_video, container , false);
         recyclerView = view.findViewById(R.id.rv_category);
         tv_loading_category = view.findViewById(R.id.tv_loading_category);
+        pb_loading = view.findViewById(R.id.pb_loading_category);
+
         videoCategoryList = new ArrayList<>();
         new CategoryHTTP(Define.CATEGORY_URL).execute();
         return view;
@@ -113,6 +117,8 @@ public class Video_Categories_Fragment extends Fragment {
         @Override
         protected void onPreExecute() {
             tv_loading_category.setText(getString(R.string.loading));
+            pb_loading.setIndeterminate(true);
+            pb_loading.setVisibility(View.VISIBLE);
             super.onPreExecute();
         }
 
@@ -126,7 +132,7 @@ public class Video_Categories_Fragment extends Fragment {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-
+            pb_loading.setVisibility(View.INVISIBLE);
             if(json != null){
                 tv_loading_category.setText("");
                 videoCategoryList = getListCategory(json);
