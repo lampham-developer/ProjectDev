@@ -53,6 +53,7 @@ public class News_Fragment extends Fragment {
         pb_loading = view.findViewById(R.id.pb_loading_tab);
 
         pagerAdapter = new PagerAdapter(getChildFragmentManager());
+        objectList = new ArrayList<>();
 
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -64,7 +65,6 @@ public class News_Fragment extends Fragment {
 
     private void getData(String url) {
         RssObject rssObject;
-        objectList = new ArrayList<>();
         try {
             document = Jsoup.connect(url).get();
             if (document != null) {

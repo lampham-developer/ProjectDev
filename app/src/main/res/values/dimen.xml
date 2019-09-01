@@ -3,4 +3,9 @@
     <dimen name="appbar_size">40dp</dimen>
     <dimen name="tab_size">30dp</dimen>
 
+    <dimen name="news_time">10dp</dimen>
+    <dimen name="news_title">30dp</dimen>
+    <dimen name="news_des">20dp</dimen>
+    <dimen name="news_normal">15dp</dimen>
+
 </resources>

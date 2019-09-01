@@ -1,6 +1,7 @@
 package com.example.helloworld.Rss;
 
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -80,7 +81,7 @@ public class News_View_Fragment extends Fragment {
                         }
                         if (thumbSubject!= null){
                             thumb = thumbSubject.getElementsByTag("a").first().getElementsByTag("img").attr("data-original");
-                        }
+                        }else thumb = null;
 
 
                         rssObject = new RssObject(title, link, thumb, des, "");
@@ -117,10 +118,12 @@ public class News_View_Fragment extends Fragment {
                 itemAdapter = new RssObjectAdapter(objectList, new RssItemClick() {
                     @Override
                     public void onClick(RssObject ob) {
-                        Toast.makeText(getContext(), ob.getTitle(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), ob.getLink(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getContext(), NewsActivity.class);
+                        intent.putExtra(getString(R.string.news_url), ob.getLink());
+                        startActivity(intent);
                     }
                 }, getContext());
-
                 rv_news.setAdapter(itemAdapter);
                 rv_news.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
             } else {

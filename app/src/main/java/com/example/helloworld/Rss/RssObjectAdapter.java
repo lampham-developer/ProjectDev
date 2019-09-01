@@ -39,18 +39,18 @@ public class RssObjectAdapter extends RecyclerView.Adapter<RssObjectAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final RssObject rssObject = objectList.get(position);
-        if (rssObject.getTitle()!=null && rssObject.getDes()!=null && rssObject.getLink()!= null && rssObject.getThumb()!= null){
             holder.tv_item_title.setText(rssObject.getTitle());
             holder.tv_item_des.setText(rssObject.getDes());
             holder.tv_item_date.setText(rssObject.getDate());
-            Picasso.with(context).load(rssObject.getThumb()).into(holder.iv_item_img);
+            if (rssObject.getThumb() != null){
+                Picasso.with(context).load(rssObject.getThumb()).into(holder.iv_item_img);
+            }else holder.iv_item_img.setImageResource(R.drawable.error_image);
             holder.layout_item_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     itemClick.onClick(rssObject);
                 }
             });
-        }
     }
 
     @Override

@@ -33,4 +33,5 @@
 
     //rss
     <string name="key_goc_nhin">goc-nhin</string>
+    <string name="news_url">news_url</string>
 </resources>
