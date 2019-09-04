@@ -129,7 +129,6 @@
                 android:id="@+id/rv_suggest"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"></androidx.recyclerview.widget.RecyclerView>
-
             <TextView
                 android:id="@+id/tv_suggest_video"
                 android:layout_width="wrap_content"

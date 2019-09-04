@@ -39,18 +39,38 @@ public class RssObjectAdapter extends RecyclerView.Adapter<RssObjectAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final RssObject rssObject = objectList.get(position);
+        if (rssObject.getTitle() != null) {
             holder.tv_item_title.setText(rssObject.getTitle());
+        } else holder.tv_item_title.setVisibility(View.GONE);
+
+        if (rssObject.getDes() != null) {
             holder.tv_item_des.setText(rssObject.getDes());
+        } else holder.tv_item_des.setVisibility(View.GONE);
+
+        if (rssObject.getDate() != null) {
             holder.tv_item_date.setText(rssObject.getDate());
-            if (rssObject.getThumb() != null){
+        } else holder.tv_item_date.setVisibility(View.GONE);
+
+//        try {
+//            if (rssObject.getThumb() != null) {
+//                Picasso.with(context).load(rssObject.getThumb()).into(holder.iv_item_img);
+//            } else holder.iv_item_img.setImageResource(R.drawable.error_image);
+//        }catch (Exception e){
+//            holder.iv_item_img.setImageResource(R.drawable.error_image);
+//        }
+        try {
+            if (rssObject.getThumb() != null) {
                 Picasso.with(context).load(rssObject.getThumb()).into(holder.iv_item_img);
-            }else holder.iv_item_img.setImageResource(R.drawable.error_image);
-            holder.layout_item_view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    itemClick.onClick(rssObject);
-                }
-            });
+            } else holder.iv_item_img.setVisibility(View.GONE);
+        }catch (Exception e){
+            holder.iv_item_img.setVisibility(View.GONE);
+        }
+        holder.layout_item_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemClick.onClick(rssObject);
+            }
+        });
     }
 
     @Override
@@ -62,6 +82,7 @@ public class RssObjectAdapter extends RecyclerView.Adapter<RssObjectAdapter.View
         LinearLayout layout_item_view;
         ImageView iv_item_img;
         TextView tv_item_title, tv_item_des, tv_item_date;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             layout_item_view = itemView.findViewById(R.id.layout_item_view);

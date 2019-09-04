@@ -1,17 +1,19 @@
 package com.example.helloworld.Rss;
 
+import org.jsoup.nodes.Element;
+
 import java.util.List;
 
 public class Article {
     private String time;
     private String title;
     private String description;
-    List<String> content;
+    List<Element> content;
 
     public Article() {
     }
 
-    public Article(String time, String title, String description, List<String> content) {
+    public Article(String time, String title, String description, List<Element> content) {
         this.time = time;
         this.title = title;
         this.description = description;
@@ -42,11 +44,11 @@ public class Article {
         this.description = description;
     }
 
-    public List<String> getContent() {
+    public List<Element> getContent() {
         return content;
     }
 
-    public void setContent(List<String> content) {
+    public void setContent(List<Element> content) {
         this.content = content;
     }
 }

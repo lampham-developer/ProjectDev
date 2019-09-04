@@ -118,7 +118,6 @@ public class News_View_Fragment extends Fragment {
                 itemAdapter = new RssObjectAdapter(objectList, new RssItemClick() {
                     @Override
                     public void onClick(RssObject ob) {
-                        Toast.makeText(getContext(), ob.getLink(), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getContext(), NewsActivity.class);
                         intent.putExtra(getString(R.string.news_url), ob.getLink());
                         startActivity(intent);
