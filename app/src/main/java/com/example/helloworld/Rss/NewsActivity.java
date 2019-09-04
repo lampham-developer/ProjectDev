@@ -195,10 +195,10 @@ public class NewsActivity extends AppCompatActivity {
             if (element_title != null) {
                 Elements list_title = element_title.getElementsByTag("li");
                 for (Element element : list_title) {
-                    Element titleSubject = element.getElementsByTag("a").first();
+                    Element titleSubject = element.getElementsByTag("h4").first();
                     if (titleSubject != null) {
-                        link = titleSubject.attr("href");
-                        title = titleSubject.text();
+                        link = titleSubject.getElementsByTag("a").first().attr("href");
+                        title = titleSubject.getElementsByTag("a").first().attr("title");
                     }
                     rssObject = new RssObject(title, link, null, null, null);
                     suggestList.add(rssObject);
