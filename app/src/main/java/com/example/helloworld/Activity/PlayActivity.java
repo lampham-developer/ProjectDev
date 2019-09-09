@@ -5,11 +5,9 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,17 +28,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.helloworld.Adapter.SuggestVideoAdapter;
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.Entity.Video;
-import com.example.helloworld.Interface.VideoClick;
+import com.example.helloworld.Interface.IVideoClick;
 import com.example.helloworld.R;
+import com.example.helloworld.SQL.DatabaseHandler;
 import com.example.helloworld.Web_API.CallAPI;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
-import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.RenderersFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -76,7 +73,6 @@ public class PlayActivity extends AppCompatActivity {
 
     AudioManager audioManager;
     long currentPosition;
-    Handler handle;
 
     int firstX, firstY, lastX, lastY;
     boolean isChangePotision = true, isChangeVolume = true;
@@ -92,6 +88,8 @@ public class PlayActivity extends AppCompatActivity {
     double volumeStep;
     int currentVolume;
 
+    DatabaseHandler databaseHandler;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -104,31 +102,43 @@ public class PlayActivity extends AppCompatActivity {
         pb_suggest_video = findViewById(R.id.pb_suggest_video);
         recyclerView = findViewById(R.id.rv_suggest);
         tv_suggest_video = findViewById(R.id.tv_suggest_video);
-
         layout_forward_state = findViewById(R.id.layout_forward_state);
         img_forward_state = findViewById(R.id.img_forward_state);
         tv_cur_position = findViewById(R.id.tv_cur_position);
         tv_duration = findViewById(R.id.tv_duration);
-
         layout_volume = findViewById(R.id.layout_volume);
         tv_cur_volume = findViewById(R.id.tv_cur_volume);
         img_volume = findViewById(R.id.img_volume);
-
-
         playerView = findViewById(R.id.pv_playing_video);
+        toolbar = findViewById(R.id.toolbar_playing);
+
+        databaseHandler = new DatabaseHandler(this);
+
+        setUpActionbar();
+        setUpVolumeStream();
+        setUpPlayerView();
+        getStartVideo();
+
+        startPlayVideo(video);
+        currentPosition = exoPlayer.getCurrentPosition();
+    }
+
+    private void setUpActionbar(){
+        setSupportActionBar(toolbar);
+        actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white);
+    }
+
+    private void setUpVolumeStream(){
         audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         volumeStep = 100 / maxVolume;
         currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         currentVolume = (int) (currentVolume * volumeStep);
+    }
 
-        toolbar = findViewById(R.id.toolbar_playing);
-        handle = new Handler();
-        setSupportActionBar(toolbar);
-
-        actionbar = getSupportActionBar();
-        actionbar.setDisplayHomeAsUpEnabled(true);
-        actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white);
+    private void setUpPlayerView(){
         screen_sate = Define.WINDOW_SCREEN;
         bt_full_screen.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -198,16 +208,14 @@ public class PlayActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
 
+    private void getStartVideo(){
         video = (Video) getIntent().getSerializableExtra(getString(R.string.intent_video));
         url = getIntent().getStringExtra(getString(R.string.intent_url));
         if (getIntent().getStringExtra(getString(R.string.intent_category)) != null
                 && getIntent().getStringExtra(getString(R.string.intent_category)).equals(getString(R.string.itent_category_hot)))
             setFullScreen();
-
-        startPlayVideo(video);
-        currentPosition = exoPlayer.getCurrentPosition();
-
     }
 
     @Override
@@ -313,9 +321,10 @@ public class PlayActivity extends AppCompatActivity {
                 tv_suggest_video.setText("");
                 pb_suggest_video.setVisibility(View.INVISIBLE);
                 videoList = callAPI.getListVideo(json, category, true);
-                videoAdapter = new SuggestVideoAdapter(videoList, getBaseContext(), new VideoClick() {
+                videoAdapter = new SuggestVideoAdapter(videoList, getBaseContext(), new IVideoClick() {
                     @Override
                     public void onClick(Video video) {
+                        databaseHandler.addVideo(video, Define.TABLE_RECENTLY_VIDEOS_NAME, Define.LIMIT_RECENTLY_VIDEOS);
                         startPlayVideo(video);
                     }
                 }, video);

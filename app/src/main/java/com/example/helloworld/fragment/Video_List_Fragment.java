@@ -18,8 +18,9 @@ import com.example.helloworld.Activity.PlayActivity;
 import com.example.helloworld.Adapter.VideoAdapter;
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.Entity.Video;
-import com.example.helloworld.Interface.VideoClick;
+import com.example.helloworld.Interface.IVideoClick;
 import com.example.helloworld.R;
+import com.example.helloworld.SQL.DatabaseHandler;
 import com.example.helloworld.Web_API.CallAPI;
 
 import org.json.JSONArray;
@@ -40,6 +41,8 @@ public class Video_List_Fragment extends Fragment {
     TextView tv_loading_video_list;
     String videoUrl;
     ProgressBar pb_video_list;
+    DatabaseHandler databaseHandler;
+
     public Video_List_Fragment(String videoUrl) {
         // Required empty public constructor
         this.videoUrl = videoUrl;
@@ -55,19 +58,20 @@ public class Video_List_Fragment extends Fragment {
         recyclerView = view.findViewById(R.id.rv_video_list);
         tv_loading_video_list = view.findViewById(R.id.tv_loading_video_list);
 
+        databaseHandler = new DatabaseHandler(getContext());
         videoList = new ArrayList<>();
         new Video_List_Fragment.VideoHTTP(videoUrl).execute();
 
         return view;
     }
 
-    private List<Video> getListVideo(String json){
+    private List<Video> getListVideo(String json) {
         List<Video> currentList = new ArrayList<>();
 
         try {
             JSONArray jsonArray = new JSONArray(json);
             int count = 0;
-            while (jsonArray.getJSONObject(count) != null){
+            while (jsonArray.getJSONObject(count) != null) {
                 JSONObject jsonObject = jsonArray.getJSONObject(count);
 
                 String title = jsonObject.getString(getString(R.string.video_title));
@@ -90,9 +94,9 @@ public class Video_List_Fragment extends Fragment {
     }
 
 
-
     class VideoHTTP extends AsyncTask<String, Void, String> {
         String url;
+
         public VideoHTTP(String url) {
             this.url = url;
         }
@@ -110,16 +114,18 @@ public class Video_List_Fragment extends Fragment {
             json = new CallAPI().getJsonFromWeb(url);
             return null;
         }
+
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if(json != null){
+            if (json != null) {
                 tv_loading_video_list.setText("");
                 pb_video_list.setVisibility(View.INVISIBLE);
                 videoList = getListVideo(json);
-                VideoAdapter videoAdapter = new VideoAdapter(videoList, getContext(), new VideoClick() {
+                VideoAdapter videoAdapter = new VideoAdapter(videoList, getContext(), new IVideoClick() {
                     @Override
                     public void onClick(Video video) {
+                        databaseHandler.addVideo(video, Define.TABLE_RECENTLY_VIDEOS_NAME, Define.LIMIT_RECENTLY_VIDEOS);
                         Intent intent = new Intent(getContext(), PlayActivity.class);
                         intent.putExtra(getString(R.string.intent_video), video);
                         intent.putExtra(getString(R.string.intent_url), Define.CATEGORY_ITEMS_URL);
@@ -128,7 +134,7 @@ public class Video_List_Fragment extends Fragment {
                 });
                 recyclerView.setAdapter(videoAdapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
-            }else{
+            } else {
                 pb_video_list.setVisibility(View.INVISIBLE);
                 tv_loading_video_list.setText(getString(R.string.disconnect));
             }

@@ -10,6 +10,8 @@
     <string name="menu_version">Version</string>
     <string name="menu_about">About us</string>
     <string name="menu_news">News</string>
+    <string name="menu_recently">Recently</string>
+    <string name="menu_saved">Saved</string>
 
     //Video
     <string name="video_title">title</string>
@@ -34,4 +36,29 @@
     //rss
     <string name="key_goc_nhin">goc-nhin</string>
     <string name="news_url">news_url</string>
+
+    <string name="rss_key_src">src</string>
+    <string name="rss_key_alt">alt</string>
+    <string name="rss_key_data_original">data-original</string>
+    <string name="rss_key_tag_img">img</string>
+    <string name="rss_key_tag_a">a</string>
+    <string name="rss_key_tag_title">title</string>
+    <string name="rss_key_tag_h4">h4</string>
+    <string name="rss_key_tag_li">li</string>
+    <string name="rss_key_tag_href">href</string>
+
+    <string name="rss_key_article_element_text">Nornal</string>
+    <string name="rss_key_article_element_img">tplCaption</string>
+    <string name="rss_key_article_element_slide_show">block_thumb_slide_show</string>
+
+    <string name="rss_key_suggest_title_list">list_title</string>
+
+
+    //reently
+    <string name="tab_recently_video">Videos</string>
+    <string name="tab_recently_news">News</string>
+    //saved
+
+    <string name="tab_saved_video">Videos</string>
+    <string name="tab_saved_news">News</string>
 </resources>

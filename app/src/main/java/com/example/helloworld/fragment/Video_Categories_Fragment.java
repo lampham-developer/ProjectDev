@@ -18,9 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.helloworld.Activity.ListVideoActivity;
 import com.example.helloworld.Adapter.CategoryAdapter;
 import com.example.helloworld.Entity.Define;
-import com.example.helloworld.Entity.Video;
 import com.example.helloworld.Entity.VideoCategory;
-import com.example.helloworld.Interface.CategoryClick;
+import com.example.helloworld.Interface.ICategoryClick;
 import com.example.helloworld.R;
 
 import org.json.JSONArray;
@@ -136,7 +135,7 @@ public class Video_Categories_Fragment extends Fragment {
             if(json != null){
                 tv_loading_category.setText("");
                 videoCategoryList = getListCategory(json);
-                CategoryAdapter categoryAdapter = new CategoryAdapter(videoCategoryList, getContext(), new CategoryClick() {
+                CategoryAdapter categoryAdapter = new CategoryAdapter(videoCategoryList, getContext(), new ICategoryClick() {
                     @Override
                     public void onCategoryClick(String category) {
                         Intent intent = new Intent(getContext(), ListVideoActivity.class);

@@ -1,12 +1,5 @@
 package com.example.helloworld.Rss;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -16,6 +9,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.helloworld.R;
 import com.squareup.picasso.Picasso;
 
@@ -24,7 +24,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +40,7 @@ public class NewsActivity extends AppCompatActivity {
     TextView tv_suggest_news;
     RecyclerView rv_suggest_news;
     RssObjectAdapter itemAdapter;
+    SuggestArticleAdapter suggestAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,21 +48,16 @@ public class NewsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_news);
 
         toolbar = findViewById(R.id.toolbar_news);
-        setSupportActionBar(toolbar);
-        actionbar = getSupportActionBar();
-        actionbar.setDisplayHomeAsUpEnabled(true);
-        actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white);
-
         tv_news_time = findViewById(R.id.tv_news_time);
         tv_news_title = findViewById(R.id.tv_news_title);
         tv_news_des = findViewById(R.id.tv_news_des);
         layout_news_normal = findViewById(R.id.layout_news_normal);
-
         tv_suggest_news = findViewById(R.id.tv_suggest_news);
         rv_suggest_news = findViewById(R.id.rv_suggest_news);
 
-
         params = (LinearLayout.LayoutParams) layout_news_normal.getLayoutParams();
+
+        setUpActionbar();
 
         if (getIntent().getStringExtra(getString(R.string.news_url)) != null) {
             url = getIntent().getStringExtra(getString(R.string.news_url));
@@ -79,6 +74,14 @@ public class NewsActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setUpActionbar() {
+        setSupportActionBar(toolbar);
+        actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white);
+
     }
 
     private void getArticleData(String news_url) {
@@ -146,15 +149,15 @@ public class NewsActivity extends AppCompatActivity {
         }
         if (article.getContent() != null) {
             for (Element element : article.getContent()) {
-                Element slide_show = element.getElementsByClass("block_thumb_slide_show").first();
-                Element text = element.getElementsByClass("Normal").first();
-                Element img = element.getElementsByClass("tplCaption").first();
+                Element slide_show = element.getElementsByClass(getString(R.string.rss_key_article_element_slide_show)).first();
+                Element text = element.getElementsByClass(getString(R.string.rss_key_article_element_text)).first();
+                Element img = element.getElementsByClass(getString(R.string.rss_key_article_element_img)).first();
 
                 if (slide_show != null) {
-                    addImageSlide(slide_show.getElementsByTag("img").first());
+                    addImageSlide(slide_show.getElementsByTag(getString(R.string.rss_key_tag_img)).first());
                 } else {
                     if (img != null) {
-                        addImage(img.getElementsByTag("img").first());
+                        addImage(img.getElementsByTag(getString(R.string.rss_key_tag_img)).first());
                     }
                 }
                 if (text != null) {
@@ -191,31 +194,31 @@ public class NewsActivity extends AppCompatActivity {
 //                rssObject = new RssObject(title, link, thumb, null, null);
 //                suggestList.add(rssObject);
 //            }
-            Element element_title = document.getElementsByClass("list_title").first();
+            Element element_title = document.getElementsByClass(getString(R.string.rss_key_suggest_title_list)).first();
             if (element_title != null) {
-                Elements list_title = element_title.getElementsByTag("li");
+                Elements list_title = element_title.getElementsByTag(getString(R.string.rss_key_tag_li));
                 for (Element element : list_title) {
-                    Element titleSubject = element.getElementsByTag("h4").first();
+                    Element titleSubject = element.getElementsByTag(getString(R.string.rss_key_tag_h4)).first();
                     if (titleSubject != null) {
-                        link = titleSubject.getElementsByTag("a").first().attr("href");
-                        title = titleSubject.getElementsByTag("a").first().attr("title");
+                        link = titleSubject.getElementsByTag(getString(R.string.rss_key_tag_a)).first().attr(getString(R.string.rss_key_tag_href));
+                        title = titleSubject.getElementsByTag(getString(R.string.rss_key_tag_a)).first().attr(getString(R.string.rss_key_tag_title));
                     }
                     rssObject = new RssObject(title, link, null, null, null);
                     suggestList.add(rssObject);
                 }
-            }else {
+            } else {
                 tv_suggest_news.setText("");
                 tv_suggest_news.setVisibility(View.GONE);
             }
         }
-        itemAdapter = new RssObjectAdapter(suggestList, new RssItemClick() {
+        suggestAdapter = new SuggestArticleAdapter(suggestList, this, new IRssItemClick() {
             @Override
             public void onClick(RssObject ob) {
                 url = ob.getLink();
                 new getHTTPData().execute();
             }
-        }, this);
-        rv_suggest_news.setAdapter(itemAdapter);
+        });
+        rv_suggest_news.setAdapter(suggestAdapter);
         rv_suggest_news.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
     }
 
@@ -229,8 +232,8 @@ public class NewsActivity extends AppCompatActivity {
     }
 
     private void addImage(Element element) {
-        String src = element.attr("src");
-        String alt = element.attr("alt");
+        String src = element.attr(getString(R.string.rss_key_src));
+        String alt = element.attr(getString(R.string.rss_key_alt));
 
         if (src != null && alt != null) {
             LinearLayout linearLayout = new LinearLayout(this);
@@ -259,8 +262,8 @@ public class NewsActivity extends AppCompatActivity {
     }
 
     private void addImageSlide(Element element) {
-        String src = element.attr("data-original");
-        String alt = element.attr("alt");
+        String src = element.attr(getString(R.string.rss_key_data_original));
+        String alt = element.attr(getString(R.string.rss_key_alt));
 
         if (src != null && alt != null) {
             LinearLayout linearLayout = new LinearLayout(this);
@@ -288,44 +291,44 @@ public class NewsActivity extends AppCompatActivity {
         }
     }
 
-    private void addSlideShow(Element element) {
-        String src = null;
-        String text = null;
-
-        Element imgSubject = element.getElementsByClass("block_thumb_slide_show").first();
-        Element textSubject = element.getElementsByClass("Normal").first();
-
-        if (!isNullElemt(imgSubject)) {
-            src = imgSubject.getElementsByTag("img").first().attr("data-original");
-        }
-        if (!isNullElemt(textSubject)) {
-            text = imgSubject.text();
-        }
-
-        if (src != null && text != null) {
-            LinearLayout linearLayout = new LinearLayout(this);
-            linearLayout.setOrientation(LinearLayout.VERTICAL);
-            linearLayout.setLayoutParams(params);
-
-            TextView textView = new TextView(this);
-            textView.setText(text);
-            textView.setTextSize((float) 10);
-            textView.setLayoutParams(params);
-
-            ImageView imageView = new ImageView(this);
-            try {
-                Picasso.with(this).load(src).into(imageView);
-            } catch (Exception e) {
-                imageView.setImageResource(R.drawable.error_image);
-            }
-            imageView.setLayoutParams(params);
-
-            linearLayout.addView(imageView);
-            linearLayout.addView(textView);
-
-            layout_news_normal.addView(linearLayout);
-        }
-    }
+//    private void addSlideShow(Element element) {
+//        String src = null;
+//        String text = null;
+//
+//        Element imgSubject = element.getElementsByClass("block_thumb_slide_show").first();
+//        Element textSubject = element.getElementsByClass("Normal").first();
+//
+//        if (!isNullElemt(imgSubject)) {
+//            src = imgSubject.getElementsByTag("img").first().attr(getString(R.string.rss_key_data_original));
+//        }
+//        if (!isNullElemt(textSubject)) {
+//            text = imgSubject.text();
+//        }
+//
+//        if (src != null && text != null) {
+//            LinearLayout linearLayout = new LinearLayout(this);
+//            linearLayout.setOrientation(LinearLayout.VERTICAL);
+//            linearLayout.setLayoutParams(params);
+//
+//            TextView textView = new TextView(this);
+//            textView.setText(text);
+//            textView.setTextSize((float) 10);
+//            textView.setLayoutParams(params);
+//
+//            ImageView imageView = new ImageView(this);
+//            try {
+//                Picasso.with(this).load(src).into(imageView);
+//            } catch (Exception e) {
+//                imageView.setImageResource(R.drawable.error_image);
+//            }
+//            imageView.setLayoutParams(params);
+//
+//            linearLayout.addView(imageView);
+//            linearLayout.addView(textView);
+//
+//            layout_news_normal.addView(linearLayout);
+//        }
+//    }
 
     private boolean isNullElemt(Element element) {
         return element == null ? true : false;
@@ -338,7 +341,7 @@ public class NewsActivity extends AppCompatActivity {
             layout_news_normal.removeAllViews();
             tv_news_time.setText("");
             tv_news_des.setText("");
-            tv_news_title.setText("Loading");
+            tv_news_title.setText(getString(R.string.loading));
             tv_news_title.getParent().requestChildFocus(tv_news_title, tv_news_title);
             tv_suggest_news.setText("");
             rv_suggest_news.setAdapter(null);

@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.R;
+import com.example.helloworld.SQL.DatabaseHandler;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,6 +37,7 @@ public class News_View_Fragment extends Fragment {
 
     TextView tv_loading;
     ProgressBar pb_loading;
+    DatabaseHandler databaseHandler;
 
     public News_View_Fragment(String url) {
         PATH_URL = url;
@@ -49,6 +50,7 @@ public class News_View_Fragment extends Fragment {
         rv_news = view.findViewById(R.id.rv_news);
         tv_loading = view.findViewById(R.id.tv_loading_news);
         pb_loading = view.findViewById(R.id.pb_loading_news);
+        databaseHandler = new DatabaseHandler(getContext());
         new HTTPConnect().execute();
         return view;
     }
@@ -61,7 +63,7 @@ public class News_View_Fragment extends Fragment {
     private void getData(String url) {
         RssObject rssObject;
         objectList = new ArrayList<>();
-        String link = null,title=null,des=null, thumb=null;
+        String link = null, title = null, des = null, thumb = null;
         try {
             document = Jsoup.connect(url).get();
             if (document != null) {
@@ -72,20 +74,20 @@ public class News_View_Fragment extends Fragment {
                     Element desSubject = e.getElementsByClass("description").first();
                     Element thumbSubject = e.getElementsByClass("thumb_art").first();
 
-                        if (titleSubject!= null) {
-                            link = titleSubject.getElementsByTag("a").first().attr("href");
-                            title = titleSubject.getElementsByTag("a").first().attr("title");
-                        }
-                        if (desSubject!= null){
-                            des = e.getElementsByClass("description").text();
-                        }
-                        if (thumbSubject!= null){
-                            thumb = thumbSubject.getElementsByTag("a").first().getElementsByTag("img").attr("data-original");
-                        }else thumb = null;
+                    if (titleSubject != null) {
+                        link = titleSubject.getElementsByTag("a").first().attr("href");
+                        title = titleSubject.getElementsByTag("a").first().attr("title");
+                    }
+                    if (desSubject != null) {
+                        des = e.getElementsByClass("description").text();
+                    }
+                    if (thumbSubject != null) {
+                        thumb = thumbSubject.getElementsByTag("a").first().getElementsByTag("img").attr("data-original");
+                    } else thumb = null;
 
 
-                        rssObject = new RssObject(title, link, thumb, des, "");
-                        objectList.add(rssObject);
+                    rssObject = new RssObject(title, link, thumb, des, "");
+                    objectList.add(rssObject);
 
                 }
             }
@@ -115,9 +117,10 @@ public class News_View_Fragment extends Fragment {
             if (document != null) {
                 tv_loading.setText("");
                 pb_loading.setVisibility(View.INVISIBLE);
-                itemAdapter = new RssObjectAdapter(objectList, new RssItemClick() {
+                itemAdapter = new RssObjectAdapter(objectList, new IRssItemClick() {
                     @Override
                     public void onClick(RssObject ob) {
+                        databaseHandler.addNews(ob, Define.TABLE_RECENTLY_NEWS_NAME, Define.LIMIT_RECENTLY_NEWS);
                         Intent intent = new Intent(getContext(), NewsActivity.class);
                         intent.putExtra(getString(R.string.news_url), ob.getLink());
                         startActivity(intent);

@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -21,8 +19,9 @@ import com.example.helloworld.Activity.PlayActivity;
 import com.example.helloworld.Adapter.VideoHotAdapter;
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.Entity.Video;
-import com.example.helloworld.Interface.VideoClick;
+import com.example.helloworld.Interface.IVideoClick;
 import com.example.helloworld.R;
+import com.example.helloworld.SQL.DatabaseHandler;
 import com.example.helloworld.Web_API.CallAPI;
 
 import org.json.JSONArray;
@@ -40,6 +39,7 @@ public class Video_Hot_Fragment extends Fragment {
     TextView tv_loading_video_hot;
     String videoUrl;
     ProgressBar pb_video_hot;
+    DatabaseHandler databaseHandler;
 
 
     public Video_Hot_Fragment(String url) {
@@ -55,6 +55,7 @@ public class Video_Hot_Fragment extends Fragment {
         recyclerView = view.findViewById(R.id.rv_video_hot);
         tv_loading_video_hot = view.findViewById(R.id.tv_loading_video_hot);
 
+        databaseHandler = new DatabaseHandler(getContext());
         videoList = new ArrayList<>();
         new VideoHTTP(videoUrl).execute();
 
@@ -122,9 +123,10 @@ public class Video_Hot_Fragment extends Fragment {
                 tv_loading_video_hot.setText("");
                 pb_video_hot.setVisibility(View.INVISIBLE);
                 videoList = getListVideo(json);
-                VideoHotAdapter videoHotAdapter = new VideoHotAdapter(videoList, getContext(), new VideoClick() {
+                VideoHotAdapter videoHotAdapter = new VideoHotAdapter(videoList, getContext(), new IVideoClick() {
                     @Override
                     public void onClick(Video video) {
+                        databaseHandler.addVideo(video, Define.TABLE_RECENTLY_VIDEOS_NAME, Define.LIMIT_RECENTLY_VIDEOS);
                         Intent intent = new Intent(getContext(), PlayActivity.class);
                         intent.putExtra(getString(R.string.intent_video), video);
                         intent.putExtra(getString(R.string.intent_url), Define.HOT_VIDEO_URL);

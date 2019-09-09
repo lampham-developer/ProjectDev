@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.helloworld.Entity.Video;
-import com.example.helloworld.Interface.VideoClick;
+import com.example.helloworld.Interface.IVideoClick;
 import com.example.helloworld.R;
 import com.squareup.picasso.Picasso;
 
@@ -25,12 +25,12 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Viewholder> 
 
     List<Video> videoList;
     Context context;
-    VideoClick videoClick;
+    IVideoClick IVideoClick;
 
-    public VideoAdapter(List<Video> videoList, Context context, VideoClick videoClick) {
+    public VideoAdapter(List<Video> videoList, Context context, IVideoClick IVideoClick) {
         this.videoList = videoList;
         this.context = context;
-        this.videoClick = videoClick;
+        this.IVideoClick = IVideoClick;
     }
 
     @NonNull
@@ -53,7 +53,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.Viewholder> 
         holder.layout_item_video_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                videoClick.onClick(video);
+                IVideoClick.onClick(video);
             }
         });
     }

@@ -12,8 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.helloworld.Entity.VideoCategory;
-import com.example.helloworld.Interface.CategoryClick;
-import com.example.helloworld.Interface.VideoClick;
+import com.example.helloworld.Interface.ICategoryClick;
 import com.example.helloworld.R;
 import com.squareup.picasso.Picasso;
 
@@ -23,12 +22,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Viewho
 
     List<VideoCategory> categoryList;
     Context context;
-    CategoryClick categoryClick;
+    ICategoryClick ICategoryClick;
 
-    public CategoryAdapter(List<VideoCategory> categoryList, Context context, CategoryClick categoryClick) {
+    public CategoryAdapter(List<VideoCategory> categoryList, Context context, ICategoryClick ICategoryClick) {
         this.categoryList = categoryList;
         this.context = context;
-        this.categoryClick = categoryClick;
+        this.ICategoryClick = ICategoryClick;
     }
 
     @NonNull
@@ -48,7 +47,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Viewho
             holder.layout_category_item_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    categoryClick.onCategoryClick(videoCategory.getTitle());
+                    ICategoryClick.onCategoryClick(videoCategory.getTitle());
                 }
             });
 

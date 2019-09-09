@@ -13,7 +13,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.helloworld.Entity.Video;
-import com.example.helloworld.Interface.VideoClick;
+import com.example.helloworld.Interface.IVideoClick;
 import com.example.helloworld.R;
 import com.squareup.picasso.Picasso;
 
@@ -25,13 +25,13 @@ import java.util.List;
 public class SuggestVideoAdapter extends RecyclerView.Adapter<SuggestVideoAdapter.Viewholder> {
     List<Video> videoList;
     Context context;
-    VideoClick videoClick;
+    IVideoClick IVideoClick;
     Video playingVideo;
 
-    public SuggestVideoAdapter(List<Video> videoList, Context context, VideoClick videoClick, Video playingVideo) {
+    public SuggestVideoAdapter(List<Video> videoList, Context context, IVideoClick IVideoClick, Video playingVideo) {
         this.videoList = videoList;
         this.context = context;
-        this.videoClick = videoClick;
+        this.IVideoClick = IVideoClick;
         this.playingVideo = playingVideo;
     }
 
@@ -62,7 +62,7 @@ public class SuggestVideoAdapter extends RecyclerView.Adapter<SuggestVideoAdapte
             holder.layout_item_video_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    videoClick.onClick(video);
+                    IVideoClick.onClick(video);
                 }
             });
         }

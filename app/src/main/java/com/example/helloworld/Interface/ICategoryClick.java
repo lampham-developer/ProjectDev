@@ -1,5 +1,5 @@
 package com.example.helloworld.Interface;
 
-public interface CategoryClick {
+public interface ICategoryClick {
     void onCategoryClick(String category);
 }

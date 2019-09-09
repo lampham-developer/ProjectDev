@@ -18,10 +18,10 @@ import java.util.List;
 
 public class RssObjectAdapter extends RecyclerView.Adapter<RssObjectAdapter.ViewHolder> {
     List<RssObject> objectList;
-    RssItemClick itemClick;
+    IRssItemClick itemClick;
     Context context;
 
-    public RssObjectAdapter(List<RssObject> objectList, RssItemClick itemClick, Context context) {
+    public RssObjectAdapter(List<RssObject> objectList, IRssItemClick itemClick, Context context) {
         this.objectList = objectList;
         this.itemClick = itemClick;
         this.context = context;
@@ -62,7 +62,7 @@ public class RssObjectAdapter extends RecyclerView.Adapter<RssObjectAdapter.View
             if (rssObject.getThumb() != null) {
                 Picasso.with(context).load(rssObject.getThumb()).into(holder.iv_item_img);
             } else holder.iv_item_img.setVisibility(View.GONE);
-        }catch (Exception e){
+        } catch (Exception e) {
             holder.iv_item_img.setVisibility(View.GONE);
         }
         holder.layout_item_view.setOnClickListener(new View.OnClickListener() {
