@@ -4,10 +4,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -16,6 +21,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.helloworld.Entity.Define;
 import com.example.helloworld.R;
 import com.squareup.picasso.Picasso;
 
@@ -36,11 +42,17 @@ public class NewsActivity extends AppCompatActivity {
     Document document;
     Article article;
     LinearLayout.LayoutParams params;
+    ScrollView.LayoutParams scoll_params;
 
     TextView tv_suggest_news;
     RecyclerView rv_suggest_news;
-    RssObjectAdapter itemAdapter;
     SuggestArticleAdapter suggestAdapter;
+
+    ImageButton ibt_up, ibt_down, ibt_save;
+    ScrollView scrollView;
+    RelativeLayout layout_news_parent;
+
+    int startY, currentY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,16 +66,48 @@ public class NewsActivity extends AppCompatActivity {
         layout_news_normal = findViewById(R.id.layout_news_normal);
         tv_suggest_news = findViewById(R.id.tv_suggest_news);
         rv_suggest_news = findViewById(R.id.rv_suggest_news);
+//        ibt_up = findViewById(R.id.ibt_up_news);
+//        ibt_down = findViewById(R.id.ibt_down_news);
+//        ibt_save = findViewById(R.id.ibt_save_news);
+        scrollView = findViewById(R.id.scrollview_news);
 
         params = (LinearLayout.LayoutParams) layout_news_normal.getLayoutParams();
+//        scoll_params = (ScrollView.LayoutParams) scrollView.getLayoutParams();
+
+
 
         setUpActionbar();
+//        setUpView();
 
         if (getIntent().getStringExtra(getString(R.string.news_url)) != null) {
             url = getIntent().getStringExtra(getString(R.string.news_url));
         }
 
+//        layout_news_parent.setOnTouchListener(new ScrollAction());
+//
+//        ibt_up.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                tv_news_title.getParent().requestChildFocus(tv_news_title, tv_news_title);
+//            }
+//        });
+//
+//        ibt_down.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                tv_suggest_news.getParent().requestChildFocus(tv_suggest_news,tv_suggest_news);
+//            }
+//        });
+//
+//        ibt_save.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Toast.makeText(getBaseContext(), "saved", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
         new getHTTPData().execute();
+
     }
 
     @Override
@@ -81,6 +125,19 @@ public class NewsActivity extends AppCompatActivity {
         actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white);
+
+    }
+
+    private void setUpView(){
+        scoll_params.width = (int) (scoll_params.MATCH_PARENT - getResources().getDimension(R.dimen.ibt_size));
+        scoll_params.height = scoll_params.WRAP_CONTENT;
+
+        tv_news_time.setLayoutParams(scoll_params);
+        tv_news_title.setLayoutParams(scoll_params);
+        tv_news_des.setLayoutParams(scoll_params);
+        tv_suggest_news.setLayoutParams(scoll_params);
+        layout_news_normal.setLayoutParams(scoll_params);
+
 
     }
 
@@ -174,26 +231,6 @@ public class NewsActivity extends AppCompatActivity {
         tv_suggest_news.setVisibility(View.VISIBLE);
         String link = null, title = null;
         if (document != null) {
-//            Elements itemList = document.getElementsByClass("list_news");
-//
-//            for (Element e : itemList) {
-//                Element titleSubject = e.getElementsByClass("title_news").first();
-//                Element thumbSubject = e.getElementsByClass("thumb_art").first();
-//
-//                if (titleSubject != null) {
-//                    link = titleSubject.getElementsByTag("a").first().attr("href");
-//                    title = titleSubject.getElementsByTag("a").first().attr("title");
-//                }
-//                try {
-//                    if (thumbSubject != null) {
-//                        thumb = thumbSubject.getElementsByTag("a").first().getElementsByTag("img").attr("data-original");
-//                    } else thumb = null;
-//                }catch (Exception ex){
-//                    thumb = null;
-//                }
-//                rssObject = new RssObject(title, link, thumb, null, null);
-//                suggestList.add(rssObject);
-//            }
             Element element_title = document.getElementsByClass(getString(R.string.rss_key_suggest_title_list)).first();
             if (element_title != null) {
                 Elements list_title = element_title.getElementsByTag(getString(R.string.rss_key_tag_li));
@@ -216,6 +253,11 @@ public class NewsActivity extends AppCompatActivity {
             public void onClick(RssObject ob) {
                 url = ob.getLink();
                 new getHTTPData().execute();
+            }
+
+            @Override
+            public void onOptionClick(RssObject ob) {
+
             }
         });
         rv_suggest_news.setAdapter(suggestAdapter);
@@ -291,45 +333,6 @@ public class NewsActivity extends AppCompatActivity {
         }
     }
 
-//    private void addSlideShow(Element element) {
-//        String src = null;
-//        String text = null;
-//
-//        Element imgSubject = element.getElementsByClass("block_thumb_slide_show").first();
-//        Element textSubject = element.getElementsByClass("Normal").first();
-//
-//        if (!isNullElemt(imgSubject)) {
-//            src = imgSubject.getElementsByTag("img").first().attr(getString(R.string.rss_key_data_original));
-//        }
-//        if (!isNullElemt(textSubject)) {
-//            text = imgSubject.text();
-//        }
-//
-//        if (src != null && text != null) {
-//            LinearLayout linearLayout = new LinearLayout(this);
-//            linearLayout.setOrientation(LinearLayout.VERTICAL);
-//            linearLayout.setLayoutParams(params);
-//
-//            TextView textView = new TextView(this);
-//            textView.setText(text);
-//            textView.setTextSize((float) 10);
-//            textView.setLayoutParams(params);
-//
-//            ImageView imageView = new ImageView(this);
-//            try {
-//                Picasso.with(this).load(src).into(imageView);
-//            } catch (Exception e) {
-//                imageView.setImageResource(R.drawable.error_image);
-//            }
-//            imageView.setLayoutParams(params);
-//
-//            linearLayout.addView(imageView);
-//            linearLayout.addView(textView);
-//
-//            layout_news_normal.addView(linearLayout);
-//        }
-//    }
-
     private boolean isNullElemt(Element element) {
         return element == null ? true : false;
     }
@@ -361,6 +364,37 @@ public class NewsActivity extends AppCompatActivity {
                 setArticleData();
                 getSuggestNews();
             }
+        }
+    }
+
+    private class ScrollAction implements View.OnTouchListener {
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            switch (motionEvent.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    startY = (int) motionEvent.getY();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    currentY = (int) motionEvent.getY();
+                    //tren xuong duoi
+                    if (currentY - startY > Define.SWIPE_THRESHOLD_Y){
+                        ibt_up.setVisibility(View.VISIBLE);
+                        ibt_save.setVisibility(View.VISIBLE);
+                        ibt_save.setVisibility(View.VISIBLE);
+                    }
+                    //duoi len tren
+                    if (startY - currentY > Define.SWIPE_THRESHOLD_Y){
+                        ibt_up.setVisibility(View.GONE);
+                        ibt_save.setVisibility(View.GONE);
+                        ibt_down.setVisibility(View.GONE);
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+
+                    break;
+            }
+            return true;
         }
     }
 }

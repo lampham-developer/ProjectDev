@@ -1,4 +1,4 @@
-package com.example.helloworld.Recently;
+package com.example.helloworld.Saved;
 
 
 import android.content.Intent;
@@ -16,8 +16,8 @@ import android.widget.TextView;
 
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.R;
-import com.example.helloworld.Rss.NewsActivity;
 import com.example.helloworld.Rss.IRssItemClick;
+import com.example.helloworld.Rss.NewsActivity;
 import com.example.helloworld.Rss.RssObject;
 import com.example.helloworld.Rss.RssObjectAdapter;
 import com.example.helloworld.SQL.DatabaseHandler;
@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Recently_News_Fragment extends Fragment {
+public class Saved_News_Fragment extends Fragment {
     RecyclerView rv_news;
     List<RssObject> objectList;
     RssObjectAdapter itemAdapter;
@@ -36,7 +36,7 @@ public class Recently_News_Fragment extends Fragment {
     ProgressBar pb_loading;
     DatabaseHandler databaseHandler;
 
-    public Recently_News_Fragment() {
+    public Saved_News_Fragment() {
         // Required empty public constructor
     }
 
@@ -55,11 +55,10 @@ public class Recently_News_Fragment extends Fragment {
 
         databaseHandler = new DatabaseHandler(getContext());
 
-        objectList = databaseHandler.getAllRssObject(Define.TABLE_RECENTLY_NEWS_NAME);
+        objectList = databaseHandler.getAllRssObject(Define.TABLE_SAVED_NEWS_NAME);
         itemAdapter = new RssObjectAdapter(objectList, new IRssItemClick() {
             @Override
             public void onClick(RssObject ob) {
-                databaseHandler.addNews(ob, Define.TABLE_RECENTLY_NEWS_NAME, Define.LIMIT_RECENTLY_NEWS);
                 Intent intent = new Intent(getContext(), NewsActivity.class);
                 intent.putExtra(getString(R.string.news_url), ob.getLink());
                 startActivity(intent);
@@ -67,7 +66,7 @@ public class Recently_News_Fragment extends Fragment {
 
             @Override
             public void onOptionClick(RssObject ob) {
-                rv_news.setAdapter(itemAdapter);
+
             }
         }, getContext(), databaseHandler);
         rv_news.setAdapter(itemAdapter);

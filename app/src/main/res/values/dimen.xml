@@ -8,4 +8,6 @@
     <dimen name="news_des">20dp</dimen>
     <dimen name="news_normal">15dp</dimen>
 
+    <dimen name="ibt_size">15dp</dimen>
+
 </resources>

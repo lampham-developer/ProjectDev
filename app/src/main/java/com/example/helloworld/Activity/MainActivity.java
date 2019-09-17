@@ -1,7 +1,10 @@
 package com.example.helloworld.Activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -15,13 +18,20 @@ import com.example.helloworld.R;
 import com.example.helloworld.Recently.Recently_Fragment;
 import com.example.helloworld.Rss.News_Fragment;
 import com.example.helloworld.Saved.Saved_Fragment;
+import com.example.helloworld.fragment.About_fragment;
 import com.example.helloworld.fragment.Video_fragment;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     NavigationView navigationView;
     Toolbar toolbar;
+    TextView tv_say_hi, tv_current_time;
+    boolean run_timer = true;
+    Handler timer_handler;
+    View header_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +41,11 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         toolbar = findViewById(R.id.toolbar_main);
+
+        header_view = navigationView.getHeaderView(0);
+
+        tv_say_hi = header_view.findViewById(R.id.tv_say_hi);
+        tv_current_time = header_view.findViewById(R.id.tv_current_time);
 
         setFragment(new News_Fragment());
         setTitle(getString(R.string.menu_news));
@@ -58,9 +73,10 @@ public class MainActivity extends AppCompatActivity {
                         setFragment(new Saved_Fragment());
                         setTitle(getString(R.string.menu_saved));
                         break;
-                    case R.id.nav_version:
-                        break;
+//                    case R.id.nav_version:
+//                        break;
                     case R.id.nav_about:
+                        setFragment(new About_fragment());
                         setTitle(getString(R.string.menu_about));
                         break;
                 }
@@ -68,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        timer_handler = new Handler();
+        timer();
     }
 
     private void setUpActionbar() {
@@ -98,5 +117,36 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void timer(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (run_timer){
+                    try {
+                        Thread.sleep(1000);
+                        timer_handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Calendar calendar = Calendar.getInstance();
+                                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                                int minute = calendar.get(Calendar.MINUTE);
+
+                                if (hour < 6 || hour >= 22) tv_say_hi.setText(getString(R.string.header_night));
+                                if (hour >= 6 && hour < 12) tv_say_hi.setText(getString(R.string.header_morning));
+                                if (hour >=12 && hour < 18) tv_say_hi.setText(getString(R.string.header_aftnoon));
+                                if (hour >=18 && hour < 22) tv_say_hi.setText(getString(R.string.header_night));
+
+                                tv_current_time.setText(hour+ ":" + minute);
+                            }
+                        });
+
+                    }catch (Exception e){
+
+                    }
+                }
+            }
+        }).start();
     }
 }

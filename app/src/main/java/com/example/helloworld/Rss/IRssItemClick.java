@@ -1,5 +1,6 @@
 package com.example.helloworld.Rss;
 
 public interface IRssItemClick {
-    public void onClick(RssObject ob);
+    void onClick(RssObject ob);
+    void onOptionClick(RssObject ob);
 }

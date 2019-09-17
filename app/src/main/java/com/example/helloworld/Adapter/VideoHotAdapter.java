@@ -52,7 +52,14 @@ public class VideoHotAdapter extends RecyclerView.Adapter<VideoHotAdapter.Viewho
             holder.tv_top_artis.setText(checkNull(video.getArtis_name()));
             holder.tv_top_date.setText(formatDate(video.getDate_public()));
             Picasso.with(context).load(video.getAvt_url()).into(holder.iv_top_img);
-            holder.layout_top_video.setOnClickListener(new View.OnClickListener() {
+            holder.iv_top_img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    IVideoClick.onClick(video);
+                }
+            });
+
+            holder.tv_item_title.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     IVideoClick.onClick(video);
@@ -64,7 +71,14 @@ public class VideoHotAdapter extends RecyclerView.Adapter<VideoHotAdapter.Viewho
             holder.tv_item_date.setText(formatDate(video.getDate_public()));
             holder.tv_item_title.setText(video.getTitle());
             Picasso.with(context).load(video.getAvt_url()).into(holder.iv_item_img);
-            holder.layout_item_video_view.setOnClickListener(new View.OnClickListener() {
+            holder.iv_item_img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    IVideoClick.onClick(video);
+                }
+            });
+
+            holder.tv_item_title.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     IVideoClick.onClick(video);
@@ -101,7 +115,7 @@ public class VideoHotAdapter extends RecyclerView.Adapter<VideoHotAdapter.Viewho
         LinearLayout layout_item_video_view;
         ImageView iv_item_img;
         LinearLayout layout_top_video;
-        ImageView iv_top_img;
+        ImageView iv_top_img, iv_option_video;
         TextView tv_top_title, tv_top_artis, tv_top_date;
 
         public Viewholder(@NonNull View itemView) {
@@ -117,6 +131,7 @@ public class VideoHotAdapter extends RecyclerView.Adapter<VideoHotAdapter.Viewho
             tv_top_title = itemView.findViewById(R.id.tv_top_title);
             tv_top_artis = itemView.findViewById(R.id.tv_top_artis);
             tv_top_date = itemView.findViewById(R.id.tv_top_date);
+            iv_option_video = itemView.findViewById(R.id.iv_option_video);
         }
     }
 }

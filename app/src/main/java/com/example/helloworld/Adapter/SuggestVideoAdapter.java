@@ -59,10 +59,25 @@ public class SuggestVideoAdapter extends RecyclerView.Adapter<SuggestVideoAdapte
             holder.tv_item_date.setText(formatDate(video.getDate_public()));
             holder.tv_item_title.setText(video.getTitle());
             Picasso.with(context).load(video.getAvt_url()).into(holder.iv_item_img);
-            holder.layout_item_video_view.setOnClickListener(new View.OnClickListener() {
+
+            holder.iv_item_img.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     IVideoClick.onClick(video);
+                }
+            });
+
+            holder.tv_item_title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    IVideoClick.onClick(video);
+                }
+            });
+
+            holder.iv_option_video.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
                 }
             });
         }
@@ -93,7 +108,7 @@ public class SuggestVideoAdapter extends RecyclerView.Adapter<SuggestVideoAdapte
         TextView tv_item_artis, tv_top_artis;
         TextView tv_item_date, tv_top_date;
         LinearLayout layout_item_video_view;
-        ImageView iv_item_img, iv_top_img;
+        ImageView iv_item_img, iv_top_img, iv_option_video;
         LinearLayout layout_top_video;
         CardView card_item_view;
         public Viewholder(@NonNull View itemView) {
@@ -109,6 +124,7 @@ public class SuggestVideoAdapter extends RecyclerView.Adapter<SuggestVideoAdapte
             layout_item_video_view = itemView.findViewById(R.id.layout_item_video_view);
             layout_top_video = itemView.findViewById(R.id.layout_top_video);
             card_item_view = itemView.findViewById(R.id.card_item_view);
+            iv_option_video = itemView.findViewById(R.id.iv_option_video);
         }
     }
 }

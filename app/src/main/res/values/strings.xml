@@ -5,13 +5,23 @@
     <string name="video_tab_2">Categories</string>
     <string name="loading">Loading</string>
     <string name="disconnect">Failed to connect internet</string>
+
+    //header
+    <string name="header_morning">Good Morning</string>
+    <string name="header_aftnoon">Good Afternoon</string>
+    <string name="header_evening">Good Evening</string>
+    <string name="header_night">Good Night</string>
+    <string name="header_now">Now is </string>
+
     //menu item
     <string name="menu_video">Videos</string>
     <string name="menu_version">Version</string>
     <string name="menu_about">About us</string>
     <string name="menu_news">News</string>
-    <string name="menu_recently">Recently</string>
+    <string name="menu_recently">History</string>
     <string name="menu_saved">Saved</string>
+    <string name="menu_save">Save</string>
+    <string name="menu_remove">Remove</string>
 
     //Video
     <string name="video_title">title</string>
@@ -47,7 +57,7 @@
     <string name="rss_key_tag_li">li</string>
     <string name="rss_key_tag_href">href</string>
 
-    <string name="rss_key_article_element_text">Nornal</string>
+    <string name="rss_key_article_element_text">Normal</string>
     <string name="rss_key_article_element_img">tplCaption</string>
     <string name="rss_key_article_element_slide_show">block_thumb_slide_show</string>
 

@@ -13,6 +13,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.helloworld.Adapter.PagerAdapter;
 import com.example.helloworld.R;
+import com.example.helloworld.Recently.Recently_News_Fragment;
+import com.example.helloworld.Recently.Recently_Videos_Fragment;
 import com.google.android.material.tabs.TabLayout;
 
 /**
@@ -42,6 +44,9 @@ public class Saved_Fragment extends Fragment {
         tabLayout = view.findViewById(R.id.video_tab_layout);
         viewPager = view.findViewById(R.id.video_tab_viewpager);
         pagerAdapter = new PagerAdapter(getChildFragmentManager());
+
+        pagerAdapter.addTab(new Saved_Video_Fragment(), getString(R.string.menu_video));
+        pagerAdapter.addTab(new Saved_News_Fragment(), getString(R.string.menu_news));
 
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.view.View;
 
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.Entity.Video;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "databaseManage";
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
 
     private Context context;
 
@@ -67,7 +68,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     sqLiteDatabase.delete(table_name, Define.KEY_VIDEO_MP4_URL + " = ?", new String[]{row_id});
                 }
             }
-            sqLiteDatabase.delete(table_name, Define.KEY_VIDEO_MP4_URL + " = ?", new String[]{String.valueOf(video.getMp4_url())});
         }
         ContentValues values = new ContentValues();
         values.put(Define.KEY_VIDEO_TITLE, video.getTitle());
@@ -75,7 +75,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(Define.KEY_VIDEO_ARTIS, video.getArtis_name());
         values.put(Define.KEY_VIDEO_AVT_URL, video.getAvt_url());
         values.put(Define.KEY_VIDEO_MP4_URL, video.getMp4_url());
-
+        
+        sqLiteDatabase.delete(table_name, Define.KEY_VIDEO_MP4_URL + " = ?", new String[]{String.valueOf(video.getMp4_url())});
         sqLiteDatabase.insert(table_name, null, values);
         sqLiteDatabase.close();
     }
@@ -91,7 +92,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     sqLiteDatabase.delete(table_name, Define.KEY_NEWS_LINK + " = ?", new String[]{row_id});
                 }
             }
-            sqLiteDatabase.delete(table_name, Define.KEY_NEWS_LINK + " = ?", new String[]{String.valueOf(rssObject.getLink())});
         }
 
         ContentValues values = new ContentValues();
@@ -101,10 +101,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(Define.KEY_NEWS_DES, rssObject.getDes());
         values.put(Define.KEY_NEWS_DATE, rssObject.getDate());
 
+        sqLiteDatabase.delete(table_name, Define.KEY_NEWS_LINK + " = ?", new String[]{String.valueOf(rssObject.getLink())});
         sqLiteDatabase.insert(table_name, null, values);
         sqLiteDatabase.close();
 
     }
+
+    public void removeRss(RssObject rssObject){
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        sqLiteDatabase.delete(Define.TABLE_SAVED_NEWS_NAME, Define.KEY_NEWS_LINK + " = ?", new String[]{rssObject.getLink()});
+    }
+
+    public boolean isContaiNews(String link){
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        Cursor cursor = sqLiteDatabase.query(Define.TABLE_SAVED_NEWS_NAME, null, Define.KEY_NEWS_LINK + " = ?",
+                new String[]{link}, null, null, null);
+        if(cursor.moveToFirst()==true) {return true;}
+        else {return false;}
+    }
+    public boolean isContaiVideo(Video video){
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        Cursor cursor = sqLiteDatabase.query(Define.TABLE_SAVED_VIDEOS_NAME, null, Define.KEY_VIDEO_MP4_URL + " = ?",
+                new String[]{video.getMp4_url()}, null, null, null);
+        if (cursor!=null) return true;
+        return false;
+    }
+
+
 
     public List<Video> getAllVideos(String table_name) {
         List<Video> videosList = new ArrayList<>();

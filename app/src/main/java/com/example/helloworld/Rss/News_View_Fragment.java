@@ -5,10 +5,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,6 +41,9 @@ public class News_View_Fragment extends Fragment {
     TextView tv_loading;
     ProgressBar pb_loading;
     DatabaseHandler databaseHandler;
+    PopupMenu popupMenu;
+    View menuIemView;
+    RssObject clicked_rssObject;
 
     public News_View_Fragment(String url) {
         PATH_URL = url;
@@ -47,6 +53,8 @@ public class News_View_Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news_view, container, false);
+
+
         rv_news = view.findViewById(R.id.rv_news);
         tv_loading = view.findViewById(R.id.tv_loading_news);
         pb_loading = view.findViewById(R.id.pb_loading_news);
@@ -58,6 +66,10 @@ public class News_View_Fragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+    }
+
+    private void saveRssObject(RssObject object) {
+        databaseHandler.addNews(object, Define.TABLE_SAVED_NEWS_NAME, Define.LIMIT_SAVED_NEWS);
     }
 
     private void getData(String url) {
@@ -125,7 +137,11 @@ public class News_View_Fragment extends Fragment {
                         intent.putExtra(getString(R.string.news_url), ob.getLink());
                         startActivity(intent);
                     }
-                }, getContext());
+
+                    @Override
+                    public void onOptionClick(RssObject ob) {
+                    }
+                }, getContext(), databaseHandler);
                 rv_news.setAdapter(itemAdapter);
                 rv_news.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
             } else {
