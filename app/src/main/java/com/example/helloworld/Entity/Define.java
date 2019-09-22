@@ -38,4 +38,8 @@ public class Define {
     public static final String KEY_NEWS_THUMB = "thumb";
     public static final String KEY_NEWS_DES = "des";
     public static final String KEY_NEWS_DATE = "date";
+
+    //String
+    public static final String STRING_REMOVED = "Removed";
+    public static final String STRING_SAVED = "Saved";
 }

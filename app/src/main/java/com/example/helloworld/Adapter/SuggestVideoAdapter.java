@@ -1,20 +1,26 @@
 package com.example.helloworld.Adapter;
 
 import android.content.Context;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.helloworld.Entity.Define;
 import com.example.helloworld.Entity.Video;
 import com.example.helloworld.Interface.IVideoClick;
 import com.example.helloworld.R;
+import com.example.helloworld.SQL.DatabaseHandler;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -27,12 +33,14 @@ public class SuggestVideoAdapter extends RecyclerView.Adapter<SuggestVideoAdapte
     Context context;
     IVideoClick IVideoClick;
     Video playingVideo;
+    DatabaseHandler databaseHandler;
 
-    public SuggestVideoAdapter(List<Video> videoList, Context context, IVideoClick IVideoClick, Video playingVideo) {
+    public SuggestVideoAdapter(List<Video> videoList, Context context, IVideoClick IVideoClick, Video playingVideo, DatabaseHandler databaseHandler) {
         this.videoList = videoList;
         this.context = context;
         this.IVideoClick = IVideoClick;
         this.playingVideo = playingVideo;
+        this.databaseHandler = databaseHandler;
     }
 
     @NonNull
@@ -77,7 +85,37 @@ public class SuggestVideoAdapter extends RecyclerView.Adapter<SuggestVideoAdapte
             holder.iv_option_video.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    boolean contain = databaseHandler.isContaiVideo(video);
+                    PopupMenu popupMenu = new PopupMenu(new ContextThemeWrapper(context, R.style.PopupMenu), view);
+                    if (contain){
+                        popupMenu.inflate(R.menu.menu_remove);
+                        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                switch (menuItem.getItemId()) {
+                                    case R.id.nav_remove_rss:
+                                        Toast.makeText(context, Define.STRING_REMOVED, Toast.LENGTH_SHORT).show();
+                                        databaseHandler.removeVideo(video);
+                                }
+                                return true;
+                            }
+                        });
+                        popupMenu.show();
+                    } else {
+                        popupMenu.inflate(R.menu.menu_save);
+                        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                switch (menuItem.getItemId()) {
+                                    case R.id.nav_save_rss:
+                                        Toast.makeText(context, Define.STRING_SAVED, Toast.LENGTH_SHORT).show();
+                                        databaseHandler.addVideo(video, Define.TABLE_SAVED_VIDEOS_NAME, Define.LIMIT_SAVED_VIDEOS);
+                                }
+                                return true;
+                            }
+                        });
+                        popupMenu.show();
+                    }
                 }
             });
         }

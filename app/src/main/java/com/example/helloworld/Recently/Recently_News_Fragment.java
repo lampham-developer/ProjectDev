@@ -65,10 +65,6 @@ public class Recently_News_Fragment extends Fragment {
                 startActivity(intent);
             }
 
-            @Override
-            public void onOptionClick(RssObject ob) {
-                rv_news.setAdapter(itemAdapter);
-            }
         }, getContext(), databaseHandler);
         rv_news.setAdapter(itemAdapter);
         rv_news.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));

@@ -107,9 +107,9 @@ public class RssObjectAdapter extends RecyclerView.Adapter<RssObjectAdapter.View
             @Override
             public void onClick(View view) {
                 boolean contain = databaseHandler.isContaiNews(rssObject.getLink());
+                PopupMenu popupMenu = new PopupMenu(context, view);
                 if (contain){
-                    PopupMenu popupMenu = new PopupMenu(context, view);
-                    popupMenu.inflate(R.menu.menu_rss_remove);
+                    popupMenu.inflate(R.menu.menu_remove);
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
@@ -123,8 +123,7 @@ public class RssObjectAdapter extends RecyclerView.Adapter<RssObjectAdapter.View
                     });
                     popupMenu.show();
                 } else {
-                    PopupMenu popupMenu = new PopupMenu(context, view);
-                    popupMenu.inflate(R.menu.menu_rss_option);
+                    popupMenu.inflate(R.menu.menu_save);
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
@@ -141,7 +140,6 @@ public class RssObjectAdapter extends RecyclerView.Adapter<RssObjectAdapter.View
 
             }
         });
-        itemClick.onOptionClick(rssObject);
     }
 
     @Override

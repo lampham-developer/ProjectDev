@@ -60,7 +60,7 @@ public class Recently_Videos_Fragment extends Fragment {
                 intent.putExtra(getString(R.string.intent_url), Define.CATEGORY_ITEMS_URL);
                 startActivity(intent);
             }
-        });
+        }, databaseHandler);
         recyclerView.setAdapter(videoAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
 

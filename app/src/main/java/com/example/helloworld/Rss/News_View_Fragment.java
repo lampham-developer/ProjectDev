@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -135,12 +133,10 @@ public class News_View_Fragment extends Fragment {
                         databaseHandler.addNews(ob, Define.TABLE_RECENTLY_NEWS_NAME, Define.LIMIT_RECENTLY_NEWS);
                         Intent intent = new Intent(getContext(), NewsActivity.class);
                         intent.putExtra(getString(R.string.news_url), ob.getLink());
+                        intent.putExtra("rss", ob);
                         startActivity(intent);
                     }
 
-                    @Override
-                    public void onOptionClick(RssObject ob) {
-                    }
                 }, getContext(), databaseHandler);
                 rv_news.setAdapter(itemAdapter);
                 rv_news.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));

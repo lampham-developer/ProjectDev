@@ -74,7 +74,7 @@ public class News_Fragment extends Fragment {
                 for (Element e : list_title) {
                     String link = cutLink(e.attr("href"));
                     String title = e.attr("title");
-                    if (!title.isEmpty() && !link.equals(getString(R.string.key_goc_nhin))) {
+                    if (!title.isEmpty() && !link.contains(getString(R.string.key_goc_nhin)) && !link.contains("raovat")) {
                         rssObject = new RssObject(title, link, "", "", "");
                         objectList.add(rssObject);
                     }

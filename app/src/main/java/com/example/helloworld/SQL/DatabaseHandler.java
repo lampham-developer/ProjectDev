@@ -62,9 +62,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (table_name.equals(Define.TABLE_RECENTLY_VIDEOS_NAME)) {
             String query = "SELECT * FROM " + table_name;
             Cursor cursor = sqLiteDatabase.rawQuery(query, null);
-            if (cursor.moveToFirst()){
+            if (cursor.moveToFirst()) {
                 if (cursor.getCount() >= limit) {
-                    String row_id = cursor.getString(cursor.getColumnIndex(Define.KEY_VIDEO_MP4_URL ));
+                    String row_id = cursor.getString(cursor.getColumnIndex(Define.KEY_VIDEO_MP4_URL));
                     sqLiteDatabase.delete(table_name, Define.KEY_VIDEO_MP4_URL + " = ?", new String[]{row_id});
                 }
             }
@@ -75,7 +75,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(Define.KEY_VIDEO_ARTIS, video.getArtis_name());
         values.put(Define.KEY_VIDEO_AVT_URL, video.getAvt_url());
         values.put(Define.KEY_VIDEO_MP4_URL, video.getMp4_url());
-        
+
         sqLiteDatabase.delete(table_name, Define.KEY_VIDEO_MP4_URL + " = ?", new String[]{String.valueOf(video.getMp4_url())});
         sqLiteDatabase.insert(table_name, null, values);
         sqLiteDatabase.close();
@@ -86,9 +86,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (table_name.equals(Define.TABLE_RECENTLY_NEWS_NAME)) {
             String query = "SELECT * FROM " + table_name;
             Cursor cursor = sqLiteDatabase.rawQuery(query, null);
-            if (cursor.moveToFirst()){
+            if (cursor.moveToFirst()) {
                 if (cursor.getCount() >= limit) {
-                    String row_id = cursor.getString(cursor.getColumnIndex(Define.KEY_NEWS_LINK ));
+                    String row_id = cursor.getString(cursor.getColumnIndex(Define.KEY_NEWS_LINK));
                     sqLiteDatabase.delete(table_name, Define.KEY_NEWS_LINK + " = ?", new String[]{row_id});
                 }
             }
@@ -107,26 +107,42 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     }
 
-    public void removeRss(RssObject rssObject){
+    public void removeRss(RssObject rssObject) {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         sqLiteDatabase.delete(Define.TABLE_SAVED_NEWS_NAME, Define.KEY_NEWS_LINK + " = ?", new String[]{rssObject.getLink()});
+        sqLiteDatabase.close();
     }
 
-    public boolean isContaiNews(String link){
+    public void removeVideo(Video video) {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        sqLiteDatabase.delete(Define.TABLE_SAVED_VIDEOS_NAME, Define.KEY_VIDEO_MP4_URL + " = ?", new String[]{video.getMp4_url()});
+        sqLiteDatabase.close();
+    }
+
+    public boolean isContaiNews(String link) {
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         Cursor cursor = sqLiteDatabase.query(Define.TABLE_SAVED_NEWS_NAME, null, Define.KEY_NEWS_LINK + " = ?",
                 new String[]{link}, null, null, null);
-        if(cursor.moveToFirst()==true) {return true;}
-        else {return false;}
+        if (cursor.moveToFirst()) {
+            sqLiteDatabase.close();
+            return true;
+        }
+        sqLiteDatabase.close();
+        return false;
+
     }
-    public boolean isContaiVideo(Video video){
+
+    public boolean isContaiVideo(Video video) {
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         Cursor cursor = sqLiteDatabase.query(Define.TABLE_SAVED_VIDEOS_NAME, null, Define.KEY_VIDEO_MP4_URL + " = ?",
                 new String[]{video.getMp4_url()}, null, null, null);
-        if (cursor!=null) return true;
+        if (cursor.moveToFirst()) {
+            sqLiteDatabase.close();
+            return true;
+        }
+        sqLiteDatabase.close();
         return false;
     }
-
 
 
     public List<Video> getAllVideos(String table_name) {
@@ -141,7 +157,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             videosList.add(video);
             cursor.moveToPrevious();
         }
-
+        sqLiteDatabase.close();
         return videosList;
     }
 
@@ -157,7 +173,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             rssObjectList.add(rssObject);
             cursor.moveToPrevious();
         }
-
+        sqLiteDatabase.close();
         return rssObjectList;
     }
 

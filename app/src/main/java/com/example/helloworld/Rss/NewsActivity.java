@@ -1,8 +1,11 @@
 package com.example.helloworld.Rss;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.R;
+import com.example.helloworld.SQL.DatabaseHandler;
 import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
@@ -38,7 +42,9 @@ public class NewsActivity extends AppCompatActivity {
     LinearLayout layout_news_normal;
     Toolbar toolbar;
     ActionBar actionbar;
+    DatabaseHandler databaseHandler;
     String url;
+    String previous_data_original;
     Document document;
     Article article;
     LinearLayout.LayoutParams params;
@@ -47,6 +53,7 @@ public class NewsActivity extends AppCompatActivity {
     TextView tv_suggest_news;
     RecyclerView rv_suggest_news;
     SuggestArticleAdapter suggestAdapter;
+    RssObject currentRss;
 
     ImageButton ibt_up, ibt_down, ibt_save;
     ScrollView scrollView;
@@ -73,7 +80,7 @@ public class NewsActivity extends AppCompatActivity {
 
         params = (LinearLayout.LayoutParams) layout_news_normal.getLayoutParams();
 //        scoll_params = (ScrollView.LayoutParams) scrollView.getLayoutParams();
-
+        databaseHandler = new DatabaseHandler(this);
 
 
         setUpActionbar();
@@ -81,6 +88,9 @@ public class NewsActivity extends AppCompatActivity {
 
         if (getIntent().getStringExtra(getString(R.string.news_url)) != null) {
             url = getIntent().getStringExtra(getString(R.string.news_url));
+        }
+        if (getIntent().getSerializableExtra("rss") != null) {
+            currentRss = (RssObject) getIntent().getSerializableExtra("rss");
         }
 
 //        layout_news_parent.setOnTouchListener(new ScrollAction());
@@ -116,6 +126,12 @@ public class NewsActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.nav_save_rss:
+                if (!databaseHandler.isContaiNews(url)){
+                    databaseHandler.addNews(currentRss, Define.TABLE_SAVED_NEWS_NAME, Define.LIMIT_SAVED_NEWS);
+                }
+                Toast.makeText(this, Define.STRING_SAVED, Toast.LENGTH_SHORT).show();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -128,7 +144,7 @@ public class NewsActivity extends AppCompatActivity {
 
     }
 
-    private void setUpView(){
+    private void setUpView() {
         scoll_params.width = (int) (scoll_params.MATCH_PARENT - getResources().getDimension(R.dimen.ibt_size));
         scoll_params.height = scoll_params.WRAP_CONTENT;
 
@@ -252,13 +268,10 @@ public class NewsActivity extends AppCompatActivity {
             @Override
             public void onClick(RssObject ob) {
                 url = ob.getLink();
+                currentRss = ob;
                 new getHTTPData().execute();
             }
 
-            @Override
-            public void onOptionClick(RssObject ob) {
-
-            }
         });
         rv_suggest_news.setAdapter(suggestAdapter);
         rv_suggest_news.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
@@ -268,6 +281,7 @@ public class NewsActivity extends AppCompatActivity {
     private void addContent(String text) {
         TextView textView = new TextView(this);
         textView.setText(text);
+        textView.setTextColor(Color.BLACK);
         textView.setTextSize((float) 20);
         textView.setLayoutParams(params);
         layout_news_normal.addView(textView);
@@ -284,7 +298,8 @@ public class NewsActivity extends AppCompatActivity {
 
             TextView textView = new TextView(this);
             textView.setText(alt);
-            textView.setTextSize((float) 10);
+            textView.setTextColor(Color.BLACK);
+            textView.setTextSize((float) 12);
             textView.setGravity(Gravity.CENTER);
             textView.setLayoutParams(params);
 
@@ -305,16 +320,18 @@ public class NewsActivity extends AppCompatActivity {
 
     private void addImageSlide(Element element) {
         String src = element.attr(getString(R.string.rss_key_data_original));
-        String alt = element.attr(getString(R.string.rss_key_alt));
+        String alt = element.attr("data-component-caption");
 
-        if (src != null && alt != null) {
+
+        if (src != null && alt != null && !src.equals(previous_data_original)) {
             LinearLayout linearLayout = new LinearLayout(this);
             linearLayout.setOrientation(LinearLayout.VERTICAL);
             linearLayout.setLayoutParams(params);
 
             TextView textView = new TextView(this);
-            textView.setText(alt);
-            textView.setTextSize((float) 10);
+            textView.setText(format_content(alt));
+            textView.setTextSize((float) 15);
+            textView.setTextColor(Color.BLACK);
             textView.setGravity(Gravity.CENTER);
             textView.setLayoutParams(params);
 
@@ -328,9 +345,22 @@ public class NewsActivity extends AppCompatActivity {
 
             linearLayout.addView(imageView);
             linearLayout.addView(textView);
-
+            previous_data_original = src;
             layout_news_normal.addView(linearLayout);
         }
+    }
+
+    private String format_content(String text) {
+        text = text.replaceAll("\\&lt;", "");
+        text = text.replaceAll("\\/p\\&gt;", "");
+        text = text.replaceAll("p\\&gt;", "");
+        text = text.replaceAll("p class=\\&quot\\;Normal\\&quot;", "");
+        text = text.replaceAll("\\&gt;", "");
+        text = text.replaceAll("\\/emspan", "");
+        text = text.replaceAll("\\/spanem", "");
+        text = text.replaceAll("\\/em", "");
+        text = text.replaceAll("\\&quot;", "\"");
+        return text;
     }
 
     private boolean isNullElemt(Element element) {
@@ -378,13 +408,13 @@ public class NewsActivity extends AppCompatActivity {
                 case MotionEvent.ACTION_MOVE:
                     currentY = (int) motionEvent.getY();
                     //tren xuong duoi
-                    if (currentY - startY > Define.SWIPE_THRESHOLD_Y){
+                    if (currentY - startY > Define.SWIPE_THRESHOLD_Y) {
                         ibt_up.setVisibility(View.VISIBLE);
                         ibt_save.setVisibility(View.VISIBLE);
                         ibt_save.setVisibility(View.VISIBLE);
                     }
                     //duoi len tren
-                    if (startY - currentY > Define.SWIPE_THRESHOLD_Y){
+                    if (startY - currentY > Define.SWIPE_THRESHOLD_Y) {
                         ibt_up.setVisibility(View.GONE);
                         ibt_save.setVisibility(View.GONE);
                         ibt_down.setVisibility(View.GONE);
@@ -397,4 +427,11 @@ public class NewsActivity extends AppCompatActivity {
             return true;
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_save, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
 }

@@ -13,6 +13,7 @@
         android:background="@drawable/custom_tab_border"
         app:tabGravity="fill"
         app:tabIndicatorColor="@color/blue"
+        app:tabMaxWidth="0dp"
         app:tabMode="fixed"
         app:tabSelectedTextColor="@color/blue"
         app:tabTextColor="@color/black"></com.google.android.material.tabs.TabLayout>
@@ -20,11 +21,12 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/video_tab_viewpager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </androidx.viewpager.widget.ViewPager>
+            android:layout_height="match_parent"></androidx.viewpager.widget.ViewPager>
+
         <TextView
             android:id="@+id/tv_loading_tab"
             android:layout_width="wrap_content"

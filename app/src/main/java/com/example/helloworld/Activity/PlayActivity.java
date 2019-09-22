@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -34,14 +36,20 @@ import com.example.helloworld.SQL.DatabaseHandler;
 import com.example.helloworld.Web_API.CallAPI;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.RenderersFactory;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.PlayerView;
@@ -55,7 +63,7 @@ public class PlayActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     ActionBar actionbar;
-    Video video;
+    Video current_video;
     PlayerView playerView;
     ExoPlayer exoPlayer;
     RecyclerView recyclerView;
@@ -119,18 +127,18 @@ public class PlayActivity extends AppCompatActivity {
         setUpPlayerView();
         getStartVideo();
 
-        startPlayVideo(video);
+        startPlayVideo(current_video);
         currentPosition = exoPlayer.getCurrentPosition();
     }
 
-    private void setUpActionbar(){
+    private void setUpActionbar() {
         setSupportActionBar(toolbar);
         actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white);
     }
 
-    private void setUpVolumeStream(){
+    private void setUpVolumeStream() {
         audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         volumeStep = 100 / maxVolume;
@@ -138,7 +146,7 @@ public class PlayActivity extends AppCompatActivity {
         currentVolume = (int) (currentVolume * volumeStep);
     }
 
-    private void setUpPlayerView(){
+    private void setUpPlayerView() {
         screen_sate = Define.WINDOW_SCREEN;
         bt_full_screen.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,8 +218,8 @@ public class PlayActivity extends AppCompatActivity {
         });
     }
 
-    private void getStartVideo(){
-        video = (Video) getIntent().getSerializableExtra(getString(R.string.intent_video));
+    private void getStartVideo() {
+        current_video = (Video) getIntent().getSerializableExtra(getString(R.string.intent_video));
         url = getIntent().getStringExtra(getString(R.string.intent_url));
         if (getIntent().getStringExtra(getString(R.string.intent_category)) != null
                 && getIntent().getStringExtra(getString(R.string.intent_category)).equals(getString(R.string.itent_category_hot)))
@@ -225,8 +233,15 @@ public class PlayActivity extends AppCompatActivity {
                 stopPlayVideo();
                 finish();
                 return true;
+            case R.id.nav_save_rss:
+                if (!databaseHandler.isContaiVideo(current_video)){
+                    databaseHandler.addVideo(current_video, Define.TABLE_SAVED_VIDEOS_NAME, Define.LIMIT_SAVED_VIDEOS);
+                }
+                Toast.makeText(this, Define.STRING_SAVED, Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private void startPlayVideo(Video video) {
@@ -245,6 +260,71 @@ public class PlayActivity extends AppCompatActivity {
 
         MediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultDataSourceFactory(getBaseContext(), userAgent)).setExtractorsFactory(new DefaultExtractorsFactory()).createMediaSource(uri);
 
+        exoPlayer.addListener(new Player.EventListener() {
+            @Override
+            public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+
+            }
+
+            @Override
+            public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+            }
+
+            @Override
+            public void onLoadingChanged(boolean isLoading) {
+
+            }
+
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                switch (playbackState) {
+                    case Player.STATE_ENDED:
+                        current_video = videoList.get(0);
+                        videoAdapter = new SuggestVideoAdapter(videoList, getBaseContext(), new IVideoClick() {
+                            @Override
+                            public void onClick(Video video) {
+                                databaseHandler.addVideo(video, Define.TABLE_RECENTLY_VIDEOS_NAME, Define.LIMIT_RECENTLY_VIDEOS);
+                                current_video = video;
+                                startPlayVideo(video);
+                            }
+                        }, current_video, databaseHandler);
+                        recyclerView.setAdapter(videoAdapter);
+                        startPlayVideo(current_video);
+                        break;
+                }
+            }
+
+            @Override
+            public void onRepeatModeChanged(int repeatMode) {
+
+            }
+
+            @Override
+            public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+            }
+
+            @Override
+            public void onPlayerError(ExoPlaybackException error) {
+                stopPlayVideo();
+            }
+
+            @Override
+            public void onPositionDiscontinuity(int reason) {
+
+            }
+
+            @Override
+            public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
+            }
+
+            @Override
+            public void onSeekProcessed() {
+
+            }
+        });
 
         playerView.setFitsSystemWindows(true);
         exoPlayer.prepare(mediaSource);
@@ -325,9 +405,10 @@ public class PlayActivity extends AppCompatActivity {
                     @Override
                     public void onClick(Video video) {
                         databaseHandler.addVideo(video, Define.TABLE_RECENTLY_VIDEOS_NAME, Define.LIMIT_RECENTLY_VIDEOS);
+                        current_video = video;
                         startPlayVideo(video);
                     }
-                }, video);
+                }, current_video, databaseHandler);
                 recyclerView.setAdapter(videoAdapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext(), RecyclerView.VERTICAL, false));
             } else {
@@ -358,4 +439,11 @@ public class PlayActivity extends AppCompatActivity {
         super.onBackPressed();
         exoPlayer.setPlayWhenReady(true);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_save, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
 }

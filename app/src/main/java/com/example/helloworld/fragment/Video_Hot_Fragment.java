@@ -133,7 +133,7 @@ public class Video_Hot_Fragment extends Fragment {
                         intent.putExtra(getString(R.string.intent_category), getString(R.string.itent_category_hot));
                         startActivity(intent);
                     }
-                });
+                }, databaseHandler);
                 recyclerView.setAdapter(videoHotAdapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
             }else{
