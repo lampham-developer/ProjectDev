@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     NavigationView navigationView;
     Toolbar toolbar;
-    TextView tv_say_hi, tv_current_time;
+    TextView tv_say_hi;
+    LinearLayout layout_drawer_header;
     boolean run_timer = true;
     Handler timer_handler;
     View header_view;
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         header_view = navigationView.getHeaderView(0);
 
         tv_say_hi = header_view.findViewById(R.id.tv_say_hi);
-        tv_current_time = header_view.findViewById(R.id.tv_current_time);
+        layout_drawer_header = header_view.findViewById(R.id.layout_drawer_header);
 
         setFragment(new News_Fragment());
         setTitle(getString(R.string.menu_news));
@@ -133,12 +135,23 @@ public class MainActivity extends AppCompatActivity {
                                 int hour = calendar.get(Calendar.HOUR_OF_DAY);
                                 int minute = calendar.get(Calendar.MINUTE);
 
-                                if (hour < 6 || hour >= 22) tv_say_hi.setText(getString(R.string.header_night));
-                                if (hour >= 6 && hour < 12) tv_say_hi.setText(getString(R.string.header_morning));
-                                if (hour >=12 && hour < 18) tv_say_hi.setText(getString(R.string.header_aftnoon));
-                                if (hour >=18 && hour < 22) tv_say_hi.setText(getString(R.string.header_night));
+                                if (hour < 6 || hour >= 22){
+                                    tv_say_hi.setText(getString(R.string.header_night));
+                                    layout_drawer_header.setBackgroundResource(R.drawable.header_night_background);
+                                }
+                                if (hour >= 6 && hour < 12){
+                                    tv_say_hi.setText(getString(R.string.header_morning));
+                                    layout_drawer_header.setBackgroundResource(R.drawable.header_morning_background);
+                                }
+                                if (hour >=12 && hour < 18){
+                                    tv_say_hi.setText(getString(R.string.header_aftnoon));
+                                    layout_drawer_header.setBackgroundResource(R.drawable.header_afternoon_background);
+                                }
+                                if (hour >=18 && hour < 22){
+                                    tv_say_hi.setText(getString(R.string.header_evening));
+                                    layout_drawer_header.setBackgroundResource(R.drawable.header_evening_background);
+                                }
 
-                                tv_current_time.setText(hour+ ":" + minute);
                             }
                         });
 

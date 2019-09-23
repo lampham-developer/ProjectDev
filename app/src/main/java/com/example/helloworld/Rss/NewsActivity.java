@@ -393,6 +393,11 @@ public class NewsActivity extends AppCompatActivity {
             if (article != null) {
                 setArticleData();
                 getSuggestNews();
+                if (tv_news_time.getText().equals("") && tv_news_des.getText().equals("")){
+                    tv_news_title.setText("Not supported article type.");
+                }
+            }else {
+                tv_news_title.setText(getString(R.string.disconnect));
             }
         }
     }

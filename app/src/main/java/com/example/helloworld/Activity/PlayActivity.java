@@ -1,7 +1,10 @@
 package com.example.helloworld.Activity;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.media.AudioManager;
@@ -97,8 +100,6 @@ public class PlayActivity extends AppCompatActivity {
     int currentVolume;
 
     DatabaseHandler databaseHandler;
-
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +130,7 @@ public class PlayActivity extends AppCompatActivity {
 
         startPlayVideo(current_video);
         currentPosition = exoPlayer.getCurrentPosition();
+
     }
 
     private void setUpActionbar() {
@@ -290,6 +292,7 @@ public class PlayActivity extends AppCompatActivity {
                             }
                         }, current_video, databaseHandler);
                         recyclerView.setAdapter(videoAdapter);
+                        databaseHandler.addVideo(current_video, Define.TABLE_RECENTLY_VIDEOS_NAME, Define.LIMIT_RECENTLY_VIDEOS);
                         startPlayVideo(current_video);
                         break;
                 }
@@ -369,9 +372,15 @@ public class PlayActivity extends AppCompatActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        recyclerView.setAdapter(videoAdapter);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            setFullScreen();
+        }
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            setWindowScreen();
+        }
         super.onConfigurationChanged(newConfig);
     }
+
 
     class VideoHTTP extends AsyncTask<String, Void, String> {
         String url;

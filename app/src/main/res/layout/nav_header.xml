@@ -1,47 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="150dp"
     android:orientation="vertical"
+    android:id="@+id/layout_drawer_header"
     android:background="@color/blue"
     android:gravity="bottom"
     >
-    <ImageView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:src="@drawable/logo"/>
-    <TextView
-        android:id="@+id/tv_say_hi"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:textColor="@color/black"
-        android:textSize="@dimen/news_normal"
-        />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="10dp"
-        android:orientation="horizontal">
+        >
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_say_hi"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:textColor="@color/black"
-            android:textSize="@dimen/news_normal"
-            android:text="@string/header_now"
-            />
-        <TextView
-            android:id="@+id/tv_current_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="2dp"
-            android:textColor="@color/black"
+            android:background="@color/selected_tab"
             android:textSize="@dimen/news_normal"
             />
-
     </LinearLayout>
 
 </LinearLayout>
