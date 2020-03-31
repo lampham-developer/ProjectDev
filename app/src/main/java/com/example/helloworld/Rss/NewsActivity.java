@@ -2,17 +2,13 @@ package com.example.helloworld.Rss;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,11 +51,7 @@ public class NewsActivity extends AppCompatActivity {
     SuggestArticleAdapter suggestAdapter;
     RssObject currentRss;
 
-    ImageButton ibt_up, ibt_down, ibt_save;
     ScrollView scrollView;
-    RelativeLayout layout_news_parent;
-
-    int startY, currentY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,28 +85,6 @@ public class NewsActivity extends AppCompatActivity {
             currentRss = (RssObject) getIntent().getSerializableExtra("rss");
         }
 
-//        layout_news_parent.setOnTouchListener(new ScrollAction());
-//
-//        ibt_up.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                tv_news_title.getParent().requestChildFocus(tv_news_title, tv_news_title);
-//            }
-//        });
-//
-//        ibt_down.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                tv_suggest_news.getParent().requestChildFocus(tv_suggest_news,tv_suggest_news);
-//            }
-//        });
-//
-//        ibt_save.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(getBaseContext(), "saved", Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
         new getHTTPData().execute();
 
@@ -399,37 +369,6 @@ public class NewsActivity extends AppCompatActivity {
             }else {
                 tv_news_title.setText(getString(R.string.disconnect));
             }
-        }
-    }
-
-    private class ScrollAction implements View.OnTouchListener {
-
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            switch (motionEvent.getActionMasked()) {
-                case MotionEvent.ACTION_DOWN:
-                    startY = (int) motionEvent.getY();
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    currentY = (int) motionEvent.getY();
-                    //tren xuong duoi
-                    if (currentY - startY > Define.SWIPE_THRESHOLD_Y) {
-                        ibt_up.setVisibility(View.VISIBLE);
-                        ibt_save.setVisibility(View.VISIBLE);
-                        ibt_save.setVisibility(View.VISIBLE);
-                    }
-                    //duoi len tren
-                    if (startY - currentY > Define.SWIPE_THRESHOLD_Y) {
-                        ibt_up.setVisibility(View.GONE);
-                        ibt_save.setVisibility(View.GONE);
-                        ibt_down.setVisibility(View.GONE);
-                    }
-                    break;
-                case MotionEvent.ACTION_UP:
-
-                    break;
-            }
-            return true;
         }
     }
 

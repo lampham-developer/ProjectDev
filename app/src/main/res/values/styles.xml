@@ -9,7 +9,7 @@
         <item name="android:popupMenuStyle">@style/PopupMenu</item>
     </style>
     <style name="PopupMenu" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:popupBackground">@android:color/white</item>
+        <item name="android:popupBackground">#8BAAA4A4</item>
     </style>
 
 </resources>

@@ -75,8 +75,10 @@ public class MainActivity extends AppCompatActivity {
                         setFragment(new Saved_Fragment());
                         setTitle(getString(R.string.menu_saved));
                         break;
-//                    case R.id.nav_version:
-//                        break;
+                    case R.id.nav_version:
+                        setFragment(new About_fragment());
+                        setTitle(getString(R.string.menu_version));
+                        break;
                     case R.id.nav_about:
                         setFragment(new About_fragment());
                         setTitle(getString(R.string.menu_about));
@@ -121,11 +123,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void timer(){
+    private void timer() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (run_timer){
+                while (run_timer) {
                     try {
                         Thread.sleep(1000);
                         timer_handler.post(new Runnable() {
@@ -135,19 +137,19 @@ public class MainActivity extends AppCompatActivity {
                                 int hour = calendar.get(Calendar.HOUR_OF_DAY);
                                 int minute = calendar.get(Calendar.MINUTE);
 
-                                if (hour < 6 || hour >= 22){
+                                if (hour < 6 || hour >= 22) {
                                     tv_say_hi.setText(getString(R.string.header_night));
                                     layout_drawer_header.setBackgroundResource(R.drawable.header_night_background);
                                 }
-                                if (hour >= 6 && hour < 12){
+                                if (hour >= 6 && hour < 12) {
                                     tv_say_hi.setText(getString(R.string.header_morning));
                                     layout_drawer_header.setBackgroundResource(R.drawable.header_morning_background);
                                 }
-                                if (hour >=12 && hour < 18){
+                                if (hour >= 12 && hour < 18) {
                                     tv_say_hi.setText(getString(R.string.header_aftnoon));
                                     layout_drawer_header.setBackgroundResource(R.drawable.header_afternoon_background);
                                 }
-                                if (hour >=18 && hour < 22){
+                                if (hour >= 18 && hour < 22) {
                                     tv_say_hi.setText(getString(R.string.header_evening));
                                     layout_drawer_header.setBackgroundResource(R.drawable.header_evening_background);
                                 }
@@ -155,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
 
                     }
                 }
