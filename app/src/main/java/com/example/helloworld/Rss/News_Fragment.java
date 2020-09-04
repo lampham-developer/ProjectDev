@@ -68,11 +68,12 @@ public class News_Fragment extends Fragment {
         try {
             document = Jsoup.connect(url).get();
             if (document != null) {
-                Element menulist = document.getElementById("main_menu");
+                Element menulist = document.getElementsByClass("main-nav").get(0);
 
                 Elements list_title = menulist.getElementsByTag("a");
                 for (Element e : list_title) {
                     String link = cutLink(e.attr("href"));
+                    if(link == "" || link.isEmpty()) continue;
                     String title = e.attr("title");
                     if (!title.isEmpty() && !link.contains(getString(R.string.key_goc_nhin)) && !link.contains("raovat")) {
                         rssObject = new RssObject(title, link, "", "", "");
