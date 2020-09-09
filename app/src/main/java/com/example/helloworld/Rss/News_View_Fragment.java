@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.R;
+import com.example.helloworld.Rss.RssReader.ChungTa_RSS_Reader;
 import com.example.helloworld.SQL.DatabaseHandler;
 
 import org.jsoup.Jsoup;
@@ -35,13 +36,12 @@ public class News_View_Fragment extends Fragment {
     List<RssObject> objectList;
     Document document;
     RssObjectAdapter itemAdapter;
+    ChungTa_RSS_Reader rssReader;
 
     TextView tv_loading;
     ProgressBar pb_loading;
     DatabaseHandler databaseHandler;
-    PopupMenu popupMenu;
-    View menuIemView;
-    RssObject clicked_rssObject;
+
 
     public News_View_Fragment(String url) {
         PATH_URL = url;
@@ -56,6 +56,7 @@ public class News_View_Fragment extends Fragment {
         rv_news = view.findViewById(R.id.rv_news);
         tv_loading = view.findViewById(R.id.tv_loading_news);
         pb_loading = view.findViewById(R.id.pb_loading_news);
+        rssReader = new ChungTa_RSS_Reader();
         databaseHandler = new DatabaseHandler(getContext());
         new HTTPConnect().execute();
         return view;
@@ -70,40 +71,6 @@ public class News_View_Fragment extends Fragment {
         databaseHandler.addNews(object, Define.TABLE_SAVED_NEWS_NAME, Define.LIMIT_SAVED_NEWS);
     }
 
-    private void getData(String url) {
-        RssObject rssObject;
-        objectList = new ArrayList<>();
-        String link = null, title = null, des = null, thumb = null;
-        try {
-            document = Jsoup.connect(url).get();
-            if (document != null) {
-                Elements itemList = document.getElementsByClass("sidebar_1").first().getElementsByClass("list_news");
-
-                for (Element e : itemList) {
-                    Element titleSubject = e.getElementsByClass("title_news").first();
-                    Element desSubject = e.getElementsByClass("description").first();
-                    Element thumbSubject = e.getElementsByClass("thumb_art").first();
-
-                    if (titleSubject != null) {
-                        link = titleSubject.getElementsByTag("a").first().attr("href");
-                        title = titleSubject.getElementsByTag("a").first().attr("title");
-                    }
-                    if (desSubject != null) {
-                        des = e.getElementsByClass("description").text();
-                    }
-                    if (thumbSubject != null) {
-                        thumb = thumbSubject.getElementsByTag("a").first().getElementsByTag("img").attr("data-original");
-                    } else thumb = null;
-
-
-                    rssObject = new RssObject(title, link, thumb, des, "");
-                    objectList.add(rssObject);
-
-                }
-            }
-        } catch (IOException e) {
-        }
-    }
 
     class HTTPConnect extends AsyncTask<Void, Void, Void> {
 
@@ -117,7 +84,7 @@ public class News_View_Fragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            getData(SERVER_URL + PATH_URL);
+            rssReader.getArticleList(SERVER_URL + PATH_URL, document, objectList);
             return null;
         }
 

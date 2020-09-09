@@ -15,6 +15,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.helloworld.Adapter.PagerAdapter;
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.R;
+import com.example.helloworld.Rss.RssReader.ChungTa_RSS_Reader;
 import com.google.android.material.tabs.TabLayout;
 
 import org.jsoup.Jsoup;
@@ -33,6 +34,7 @@ public class News_Fragment extends Fragment {
     ViewPager viewPager;
     List<RssObject> objectList;
     Document document;
+    ChungTa_RSS_Reader rssReader;
 
     TextView tv_loading;
     ProgressBar pb_loading;
@@ -52,6 +54,7 @@ public class News_Fragment extends Fragment {
         tv_loading = view.findViewById(R.id.tv_loading_tab);
         pb_loading = view.findViewById(R.id.pb_loading_tab);
 
+        rssReader = new ChungTa_RSS_Reader();
         pagerAdapter = new PagerAdapter(getChildFragmentManager());
         objectList = new ArrayList<>();
 
@@ -63,45 +66,6 @@ public class News_Fragment extends Fragment {
         return view;
     }
 
-    private void getData(String url) {
-        RssObject rssObject;
-        try {
-            document = Jsoup.connect(url).get();
-            if (document != null) {
-                Element menulist = document.getElementsByClass("main-nav").get(0);
-
-                Elements list_title = menulist.getElementsByTag("a");
-                for (Element e : list_title) {
-                    String link = cutLink(e.attr("href"));
-                    if(link == "" || link.isEmpty()) continue;
-                    String title = e.attr("title");
-                    if (!title.isEmpty() && !link.contains(getString(R.string.key_goc_nhin)) && !link.contains("raovat")) {
-                        rssObject = new RssObject(title, link, "", "", "");
-                        objectList.add(rssObject);
-                    }
-                }
-            }
-            objectList.remove(objectList.size() - 1);
-            objectList.remove(objectList.size() - 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String cutLink(String s) {
-        int index = 0;
-        for (int count = s.length(); count >= 0; count--) {
-            try {
-                if (s.charAt(count) == '/') {
-                    index = count;
-                    break;
-                }
-            } catch (Exception e) {
-
-            }
-        }
-        return s.substring(index + 1);
-    }
 
     class HTTPConnect extends AsyncTask<Void, Void, Void> {
         @Override
@@ -114,7 +78,7 @@ public class News_Fragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            getData(Define.SERVER_URL);
+            rssReader.getMenuList(Define.SERVER_URL, document, objectList);
             return null;
         }
 
