@@ -1,4 +1,4 @@
-package com.example.helloworld.Rss;
+package com.example.helloworld.News.Activity;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -21,6 +21,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.helloworld.Entity.Define;
+import com.example.helloworld.News.Adapter.SuggestArticleAdapter;
+import com.example.helloworld.News.Entities.Article;
+import com.example.helloworld.News.Entities.IRssItemClick;
+import com.example.helloworld.News.Entities.RssObject;
 import com.example.helloworld.R;
 import com.example.helloworld.SQL.DatabaseHandler;
 import com.squareup.picasso.Picasso;
@@ -134,11 +138,11 @@ public class NewsActivity extends AppCompatActivity {
             String time = null, title = null, des = null;
             List<Element> contentList = null;
             if (document != null) {
-                Element itemList = document.getElementsByClass("sidebar_1").first();
+                Element itemList = document.getElementsByClass("fck_detail width_common").first();
+                Element timeSubject = document.getElementsByClass("clock_current").first();
                 if (document != null) {
-                    Element timeSubject = document.getElementsByClass("time left").first();
-                    Element titleSubject = document.getElementsByClass("title_news_detail mb10").first();
-                    Element desSubject = document.getElementsByClass("description").first();
+                    Element titleSubject = document.getElementsByClass("title_news").first();
+                    Element desSubject = document.getElementsByClass("short_intro").first();
                     Element normalSubject = document.getElementsByClass("content_detail fck_detail width_common block_ads_connect").first();
 
                     Element slideSubject = document.getElementsByClass("content_detail fck_detail width_common").first();
@@ -173,7 +177,7 @@ public class NewsActivity extends AppCompatActivity {
             }
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 

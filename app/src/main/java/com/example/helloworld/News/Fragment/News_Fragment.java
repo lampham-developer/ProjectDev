@@ -1,4 +1,4 @@
-package com.example.helloworld.Rss;
+package com.example.helloworld.News.Fragment;
 
 
 import android.os.AsyncTask;
@@ -14,14 +14,13 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.helloworld.Adapter.PagerAdapter;
 import com.example.helloworld.Entity.Define;
+import com.example.helloworld.News.Entities.RssObject;
 import com.example.helloworld.R;
-import com.example.helloworld.Rss.RssReader.ChungTa_RSS_Reader;
+import com.example.helloworld.News.RssReader.ChungTa_RSS_Reader;
 import com.google.android.material.tabs.TabLayout;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,7 +77,15 @@ public class News_Fragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            rssReader.getMenuList(Define.SERVER_URL, document, objectList);
+            String url = Define.SERVER_URL;
+            try {
+                document = Jsoup.connect(url).get();
+                if(document != null){
+                    objectList = rssReader.getMenuList( document, objectList);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return null;
         }
 

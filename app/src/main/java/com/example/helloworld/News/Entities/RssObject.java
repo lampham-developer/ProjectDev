@@ -1,4 +1,4 @@
-package com.example.helloworld.Rss;
+package com.example.helloworld.News.Entities;
 
 import java.io.Serializable;
 
@@ -8,6 +8,9 @@ public class RssObject implements Serializable {
     private String thumb;
     private String des;
     private String date;
+
+    public RssObject() {
+    }
 
     public RssObject(String title, String link, String thumb, String des, String date) {
         this.title = title;

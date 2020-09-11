@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.helloworld.R;
 import com.example.helloworld.Recently.Recently_Fragment;
-import com.example.helloworld.Rss.News_Fragment;
+import com.example.helloworld.News.Fragment.News_Fragment;
 import com.example.helloworld.Saved.Saved_Fragment;
 import com.example.helloworld.fragment.About_fragment;
 import com.example.helloworld.fragment.Video_fragment;

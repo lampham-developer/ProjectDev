@@ -1,4 +1,4 @@
-package com.example.helloworld.Rss;
+package com.example.helloworld.News.Entities;
 
 import org.jsoup.nodes.Element;
 

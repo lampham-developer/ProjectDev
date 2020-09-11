@@ -14,8 +14,7 @@ public class Define {
     public static final String CATEGORY_URL = "https://demo5639557.mockable.io/getCategory";
     public static final String CATEGORY_ITEMS_URL = "https://demo5639557.mockable.io/getItemCategory";
 
-    public static final String SERVER_URL = "https://vnexpress.net/";
-    public static final String NEWS_MENU_ = "https://vnexpress.net/";
+    public static final String SERVER_URL = "https://chungta.vn/";
 
     //database
     public static final int LIMIT_RECENTLY_VIDEOS = 20;

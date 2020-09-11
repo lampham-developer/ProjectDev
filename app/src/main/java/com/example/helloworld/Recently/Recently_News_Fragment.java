@@ -16,10 +16,10 @@ import android.widget.TextView;
 
 import com.example.helloworld.Entity.Define;
 import com.example.helloworld.R;
-import com.example.helloworld.Rss.NewsActivity;
-import com.example.helloworld.Rss.IRssItemClick;
-import com.example.helloworld.Rss.RssObject;
-import com.example.helloworld.Rss.RssObjectAdapter;
+import com.example.helloworld.News.Activity.NewsActivity;
+import com.example.helloworld.News.Entities.IRssItemClick;
+import com.example.helloworld.News.Entities.RssObject;
+import com.example.helloworld.News.Adapter.RssObjectAdapter;
 import com.example.helloworld.SQL.DatabaseHandler;
 
 import java.util.List;
