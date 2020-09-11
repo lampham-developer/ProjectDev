@@ -11,8 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Rss.SavedNewsActivity"></activity>
-        <activity android:name=".Rss.NewsActivity" />
+        <activity android:name=".News.Activity.SavedNewsActivity"></activity>
+        <activity android:name=".News.Activity.NewsActivity" />
         <activity
             android:name=".Activity.ListVideoActivity"
             android:configChanges="orientation|screenSize" />

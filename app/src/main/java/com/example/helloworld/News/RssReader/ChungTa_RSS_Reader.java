@@ -1,7 +1,6 @@
-package com.example.helloworld.Rss.RssReader;
+package com.example.helloworld.News.RssReader;
 
-import com.example.helloworld.R;
-import com.example.helloworld.Rss.RssObject;
+import com.example.helloworld.News.Entities.RssObject;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,50 +12,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChungTa_RSS_Reader {
-    public void getMenuList(String url, Document document, List<RssObject> objectList) {
+    public List<RssObject> getMenuList(Document document, List<RssObject> objectList) {
         RssObject rssObject;
-        try {
-            document = Jsoup.connect(url).get();
-            if (document != null) {
-                Element menulist = document.getElementsByClass("main-nav").get(0);
+
+                Element menulist = document.getElementsByClass("divblock menu_div").get(0);
 
                 Elements list_title = menulist.getElementsByTag("a");
                 for (Element e : list_title) {
                     String link = cutLink(e.attr("href"));
                     if(link == "" || link.isEmpty()) continue;
                     String title = e.attr("title");
+                    rssObject = new RssObject();
+                    rssObject.setLink(link);
+                    rssObject.setTitle(title);
+
+                    objectList.add(rssObject);
                 }
-            }
-            objectList.remove(objectList.size() - 1);
-            objectList.remove(objectList.size() - 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        objectList.remove(objectList.size()-1);
+        return objectList;
     }
 
-    public void getArticleList(String url, Document document, List<RssObject> objectList) {
+    public List<RssObject> getArticleList(Document document, List<RssObject> objectList) {
         RssObject rssObject;
         objectList = new ArrayList<>();
         String link = null, title = null, des = null, thumb = null;
-        try {
-            document = Jsoup.connect(url).get();
-            if (document != null) {
-                Elements itemList = document.getElementsByClass("sidebar_1").first().getElementsByClass("list_news");
+
+                Elements itemList = document.getElementsByClass("ul-folder").first().getElementsByTag("li");
 
                 for (Element e : itemList) {
-                    Element titleSubject = e.getElementsByClass("title_news").first();
-                    Element desSubject = e.getElementsByClass("description").first();
-                    Element thumbSubject = e.getElementsByClass("thumb_art").first();
+                    Element titleSubject = e.getElementsByClass("title").first();
+                    Element desSubject = e.getElementsByClass("lead").first();
+                    Element thumbSubject = e.getElementsByClass("thumb-art").first();
 
                     if (titleSubject != null) {
                         link = titleSubject.getElementsByTag("a").first().attr("href");
                         title = titleSubject.getElementsByTag("a").first().attr("title");
                     }
                     if (desSubject != null) {
-                        des = e.getElementsByClass("description").text();
+                        des = e.getElementsByClass("lead").text();
                     }
                     if (thumbSubject != null) {
-                        thumb = thumbSubject.getElementsByTag("a").first().getElementsByTag("img").attr("data-original");
+                        thumb = thumbSubject.getElementsByTag("a").first().getElementsByTag("img").attr("src");
                     } else thumb = null;
 
 
@@ -64,9 +60,7 @@ public class ChungTa_RSS_Reader {
                     objectList.add(rssObject);
 
                 }
-            }
-        } catch (IOException e) {
-        }
+        return objectList;
     }
 
     private String cutLink(String s) {

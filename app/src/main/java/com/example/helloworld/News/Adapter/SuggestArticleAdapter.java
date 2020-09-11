@@ -1,4 +1,4 @@
-package com.example.helloworld.Rss;
+package com.example.helloworld.News.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.helloworld.News.Entities.RssObject;
+import com.example.helloworld.News.Entities.IRssItemClick;
 import com.example.helloworld.R;
 
 import java.util.List;
@@ -17,7 +19,7 @@ import java.util.List;
 public class SuggestArticleAdapter extends RecyclerView.Adapter<SuggestArticleAdapter.ViewHolder> {
     List<RssObject> rssObjectList;
     Context context;
-    IRssItemClick IRssItemClick;
+    com.example.helloworld.News.Entities.IRssItemClick IRssItemClick;
 
     public SuggestArticleAdapter(List<RssObject> rssObjectList, Context context, IRssItemClick IRssItemClick) {
         this.rssObjectList = rssObjectList;

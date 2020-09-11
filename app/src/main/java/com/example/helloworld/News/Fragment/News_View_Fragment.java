@@ -1,4 +1,4 @@
-package com.example.helloworld.Rss;
+package com.example.helloworld.News.Fragment;
 
 
 import android.content.Intent;
@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -16,14 +15,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.helloworld.Entity.Define;
+import com.example.helloworld.News.Adapter.RssObjectAdapter;
+import com.example.helloworld.News.Entities.IRssItemClick;
+import com.example.helloworld.News.Entities.RssObject;
+import com.example.helloworld.News.Activity.NewsActivity;
 import com.example.helloworld.R;
-import com.example.helloworld.Rss.RssReader.ChungTa_RSS_Reader;
+import com.example.helloworld.News.RssReader.ChungTa_RSS_Reader;
 import com.example.helloworld.SQL.DatabaseHandler;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class News_View_Fragment extends Fragment {
         tv_loading = view.findViewById(R.id.tv_loading_news);
         pb_loading = view.findViewById(R.id.pb_loading_news);
         rssReader = new ChungTa_RSS_Reader();
+        objectList = new ArrayList<>();
         databaseHandler = new DatabaseHandler(getContext());
         new HTTPConnect().execute();
         return view;
@@ -84,7 +86,15 @@ public class News_View_Fragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            rssReader.getArticleList(SERVER_URL + PATH_URL, document, objectList);
+            String url = SERVER_URL + PATH_URL;
+            try {
+                document = Jsoup.connect(url).get();
+                if(document != null){
+                    objectList = rssReader.getArticleList( document, objectList);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return null;
         }
 

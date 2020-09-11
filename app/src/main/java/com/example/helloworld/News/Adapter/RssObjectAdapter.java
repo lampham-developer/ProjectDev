@@ -1,4 +1,4 @@
-package com.example.helloworld.Rss;
+package com.example.helloworld.News.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.helloworld.Entity.Define;
+import com.example.helloworld.News.Entities.RssObject;
+import com.example.helloworld.News.Entities.IRssItemClick;
 import com.example.helloworld.R;
 import com.example.helloworld.SQL.DatabaseHandler;
 import com.squareup.picasso.Picasso;
