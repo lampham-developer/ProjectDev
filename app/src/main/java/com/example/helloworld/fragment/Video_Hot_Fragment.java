@@ -28,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,7 +114,7 @@ public class Video_Hot_Fragment extends Fragment {
 
         @Override
         protected String doInBackground(String... strings) {
-             json = new CallAPI().getJsonFromWeb(url);
+            json = new CallAPI().getJsonFromWeb(url);
             return null;
         }
         @Override

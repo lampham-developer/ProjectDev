@@ -167,7 +167,207 @@ public class NewsActivity extends AppCompatActivity {
             }
         }
     }
+    private void getArticleData(String news_url) {
+        try {
+            document = Jsoup.connect(news_url).get();
+            article = null;
+            String time = null, title = null, des = null;
+            List<Element> contentList = null;
+            if (document != null) {
+                contentList = new ArrayList<>();
+                Element itemList = document.getElementById("box_details_news");
+                Element timeSubject = document.getElementsByClass("clock_current").first();
+                if (document != null) {
+                    Element titleSubject = document.getElementsByClass("title_news").first();
+                    Element desSubject = document.getElementsByClass("short_intro").first();
 
+
+                    if (timeSubject != null) {
+                        time = timeSubject.text();
+                    }
+                    if (titleSubject != null) {
+                        title = titleSubject.text();
+                    }
+                    if (desSubject != null) {
+                        des = desSubject.text();
+                    }
+
+                    for (Element e : itemList.getAllElements()){
+                        if(e.getElementsByClass("Normal") != null){
+                            contentList.add(e);
+                        }else if(e.getElementsByTag("table") != null){
+                            contentList.add(e);
+                        }
+                    }
+
+                    article = new Article(time, title, des, contentList);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setArticleData() {
+        layout_news_normal.removeAllViews();
+        tv_news_title.getParent().requestChildFocus(tv_news_title, tv_news_title);
+        if (article.getTime() != null) {
+            tv_news_time.setText(article.getTime());
+        }
+        if (article.getTitle() != null) {
+            tv_news_title.setText(article.getTitle());
+            setTitle(article.getTitle());
+        }
+        if (article.getDescription() != null) {
+            tv_news_des.setText(article.getDescription());
+        }
+        if (article.getContent() != null) {
+            for (Element element : article.getContent()) {
+                Element slide_show = element.getElementsByClass(getString(R.string.rss_key_article_element_slide_show)).first();
+                Element text = element.getElementsByClass(getString(R.string.rss_key_article_element_text)).first();
+                Element img = element.getElementsByClass(getString(R.string.rss_key_article_element_img)).first();
+
+                if (slide_show != null) {
+                    addImageSlide(slide_show.getElementsByTag(getString(R.string.rss_key_tag_img)).first());
+                } else {
+                    if (img != null) {
+                        addImage(img.getElementsByTag(getString(R.string.rss_key_tag_img)).first());
+                    }
+                }
+                if (text != null) {
+                    addContent(text.text());
+                }
+            }
+        }
+    }
+
+    private void getSuggestNews() {
+        List<RssObject> suggestList = new ArrayList<>();
+        RssObject rssObject;
+        tv_suggest_news.setText("Tin liên quan");
+        tv_suggest_news.setVisibility(View.VISIBLE);
+        String link = null, title = null;
+        if (document != null) {
+            Element element_title = document.getElementsByClass(getString(R.string.rss_key_suggest_title_list)).first();
+            if (element_title != null) {
+                Elements list_title = element_title.getElementsByTag(getString(R.string.rss_key_tag_li));
+                for (Element element : list_title) {
+                    Element titleSubject = element.getElementsByTag(getString(R.string.rss_key_tag_h4)).first();
+                    if (titleSubject != null) {
+                        link = titleSubject.getElementsByTag(getString(R.string.rss_key_tag_a)).first().attr(getString(R.string.rss_key_tag_href));
+                        title = titleSubject.getElementsByTag(getString(R.string.rss_key_tag_a)).first().attr(getString(R.string.rss_key_tag_title));
+                    }
+                    rssObject = new RssObject(title, link, null, null, null);
+                    suggestList.add(rssObject);
+                }
+            } else {
+                tv_suggest_news.setText("");
+                tv_suggest_news.setVisibility(View.GONE);
+            }
+        }
+        suggestAdapter = new SuggestArticleAdapter(suggestList, this, new IRssItemClick() {
+            @Override
+            public void onClick(RssObject ob) {
+                url = ob.getLink();
+                currentRss = ob;
+                new NewsActivity.getHTTPData().execute();
+            }
+
+        });
+        rv_suggest_news.setAdapter(suggestAdapter);
+        rv_suggest_news.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+    }
+
+
+    private void addContent(String text) {
+        TextView textView = new TextView(this);
+        textView.setText(text);
+        textView.setTextColor(Color.BLACK);
+        textView.setTextSize((float) 20);
+        textView.setLayoutParams(params);
+        layout_news_normal.addView(textView);
+    }
+
+    private void addImage(Element element) {
+        String src = element.attr(getString(R.string.rss_key_src));
+        String alt = element.attr(getString(R.string.rss_key_alt));
+
+        if (src != null && alt != null) {
+            LinearLayout linearLayout = new LinearLayout(this);
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
+            linearLayout.setLayoutParams(params);
+
+            TextView textView = new TextView(this);
+            textView.setText(alt);
+            textView.setTextColor(Color.BLACK);
+            textView.setTextSize((float) 12);
+            textView.setGravity(Gravity.CENTER);
+            textView.setLayoutParams(params);
+
+            ImageView imageView = new ImageView(this);
+            try {
+                Picasso.with(this).load(src).into(imageView);
+            } catch (Exception e) {
+                imageView.setImageResource(R.drawable.error_image);
+            }
+            imageView.setLayoutParams(params);
+
+            linearLayout.addView(imageView);
+            linearLayout.addView(textView);
+
+            layout_news_normal.addView(linearLayout);
+        }
+    }
+
+    private void addImageSlide(Element element) {
+        String src = element.attr(getString(R.string.rss_key_data_original));
+        String alt = element.attr("data-component-caption");
+
+
+        if (src != null && alt != null && !src.equals(previous_data_original)) {
+            LinearLayout linearLayout = new LinearLayout(this);
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
+            linearLayout.setLayoutParams(params);
+
+            TextView textView = new TextView(this);
+            textView.setText(format_content(alt));
+            textView.setTextSize((float) 15);
+            textView.setTextColor(Color.BLACK);
+            textView.setGravity(Gravity.CENTER);
+            textView.setLayoutParams(params);
+
+            ImageView imageView = new ImageView(this);
+            try {
+                Picasso.with(this).load(src).into(imageView);
+            } catch (Exception e) {
+                imageView.setImageResource(R.drawable.error_image);
+            }
+            imageView.setLayoutParams(params);
+
+            linearLayout.addView(imageView);
+            linearLayout.addView(textView);
+            previous_data_original = src;
+            layout_news_normal.addView(linearLayout);
+        }
+    }
+
+    private String format_content(String text) {
+        text = text.replaceAll("\\&lt;", "");
+        text = text.replaceAll("\\/p\\&gt;", "");
+        text = text.replaceAll("p\\&gt;", "");
+        text = text.replaceAll("p class=\\&quot\\;Normal\\&quot;", "");
+        text = text.replaceAll("\\&gt;", "");
+        text = text.replaceAll("\\/emspan", "");
+        text = text.replaceAll("\\/spanem", "");
+        text = text.replaceAll("\\/em", "");
+        text = text.replaceAll("\\&quot;", "\"");
+        return text;
+    }
+
+    private boolean isNullElemt(Element element) {
+        return element == null ? true : false;
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_save, menu);
