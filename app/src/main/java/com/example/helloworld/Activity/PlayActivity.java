@@ -59,6 +59,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 

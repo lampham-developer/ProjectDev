@@ -1,6 +1,23 @@
 package com.example.helloworld.News.RssReader;
 
+import android.graphics.Color;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.helloworld.Entity.Define;
+import com.example.helloworld.News.Activity.NewsActivity;
+import com.example.helloworld.News.Adapter.SuggestArticleAdapter;
+import com.example.helloworld.News.Entities.Article;
+import com.example.helloworld.News.Entities.IRssItemClick;
 import com.example.helloworld.News.Entities.RssObject;
+import com.example.helloworld.R;
+import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -45,7 +62,7 @@ public class ChungTa_RSS_Reader {
                     Element thumbSubject = e.getElementsByClass("thumb-art").first();
 
                     if (titleSubject != null) {
-                        link = titleSubject.getElementsByTag("a").first().attr("href");
+                        link = Define.SERVER_URL + cutLink(titleSubject.getElementsByTag("a").first().attr("href"));
                         title = titleSubject.getElementsByTag("a").first().attr("title");
                     }
                     if (desSubject != null) {
@@ -77,4 +94,5 @@ public class ChungTa_RSS_Reader {
         }
         return s.substring(index + 1);
     }
+
 }

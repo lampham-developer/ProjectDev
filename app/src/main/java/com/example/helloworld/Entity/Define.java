@@ -10,9 +10,9 @@ public class Define {
     public static final int SWIPE_THRESHOLD_Y = 40;
 
 
-    public static final String HOT_VIDEO_URL = "https://demo5639557.mockable.io/getVideoHot";
-    public static final String CATEGORY_URL = "https://demo5639557.mockable.io/getCategory";
-    public static final String CATEGORY_ITEMS_URL = "https://demo5639557.mockable.io/getItemCategory";
+    public static final String HOT_VIDEO_URL = "http://demo1913415.mockable.io/getVideoHot";
+    public static final String CATEGORY_URL = "http://demo1913415.mockable.io/GetCategory";
+    public static final String CATEGORY_ITEMS_URL = "http://demo1913415.mockable.io/GetItemCategoryOne";
 
     public static final String SERVER_URL = "https://chungta.vn/";
 

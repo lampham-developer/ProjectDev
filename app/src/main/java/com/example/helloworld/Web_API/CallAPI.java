@@ -8,7 +8,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -29,16 +31,18 @@ public class CallAPI  {
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("GET");
 
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
+            InputStream inputStream = new BufferedInputStream(con.getInputStream());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
+            String inputLine;
+            StringBuilder stringBuilder = new StringBuilder();
+
+            while ((inputLine = reader.readLine()) != null) {
+                stringBuilder.append(inputLine);
             }
-            in.close();
-            result = response.toString();
+
+            inputStream.close();
+            result = stringBuilder.toString();
 
         } catch (Exception e) {
             e.printStackTrace();

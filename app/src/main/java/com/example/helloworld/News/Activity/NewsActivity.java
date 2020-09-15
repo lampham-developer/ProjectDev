@@ -131,6 +131,42 @@ public class NewsActivity extends AppCompatActivity {
 
     }
 
+
+
+    private class getHTTPData extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            layout_news_normal.removeAllViews();
+            tv_news_time.setText("");
+            tv_news_des.setText("");
+            tv_news_title.setText(getString(R.string.loading));
+            tv_news_title.getParent().requestChildFocus(tv_news_title, tv_news_title);
+            tv_suggest_news.setText("");
+            rv_suggest_news.setAdapter(null);
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            getArticleData(url);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (article != null) {
+                setArticleData();
+                getSuggestNews();
+                if (tv_news_time.getText().equals("") && tv_news_des.getText().equals("")){
+                    tv_news_title.setText("Not supported article type.");
+                }
+            }else {
+                tv_news_title.setText(getString(R.string.disconnect));
+            }
+        }
+    }
     private void getArticleData(String news_url) {
         try {
             document = Jsoup.connect(news_url).get();
@@ -138,14 +174,13 @@ public class NewsActivity extends AppCompatActivity {
             String time = null, title = null, des = null;
             List<Element> contentList = null;
             if (document != null) {
-                Element itemList = document.getElementsByClass("fck_detail width_common").first();
+                contentList = new ArrayList<>();
+                Element itemList = document.getElementById("box_details_news");
                 Element timeSubject = document.getElementsByClass("clock_current").first();
                 if (document != null) {
                     Element titleSubject = document.getElementsByClass("title_news").first();
                     Element desSubject = document.getElementsByClass("short_intro").first();
-                    Element normalSubject = document.getElementsByClass("content_detail fck_detail width_common block_ads_connect").first();
 
-                    Element slideSubject = document.getElementsByClass("content_detail fck_detail width_common").first();
 
                     if (timeSubject != null) {
                         time = timeSubject.text();
@@ -157,18 +192,11 @@ public class NewsActivity extends AppCompatActivity {
                         des = desSubject.text();
                     }
 
-                    if (normalSubject != null) {
-                        contentList = new ArrayList<>();
-                        for (Element e : normalSubject.getAllElements()) {
+                    for (Element e : itemList.getAllElements()){
+                        if(e.getElementsByClass("Normal") != null){
                             contentList.add(e);
-                        }
-                        contentList.remove(0);
-                    }
-
-                    if (!isNullElemt(slideSubject)) {
-                        contentList = new ArrayList<>();
-                        for (Element element : slideSubject.getElementsByClass("item_slide_show clearfix")) {
-                            contentList.add(element);
+                        }else if(e.getElementsByTag("table") != null){
+                            contentList.add(e);
                         }
                     }
 
@@ -243,7 +271,7 @@ public class NewsActivity extends AppCompatActivity {
             public void onClick(RssObject ob) {
                 url = ob.getLink();
                 currentRss = ob;
-                new getHTTPData().execute();
+                new NewsActivity.getHTTPData().execute();
             }
 
         });
@@ -340,42 +368,6 @@ public class NewsActivity extends AppCompatActivity {
     private boolean isNullElemt(Element element) {
         return element == null ? true : false;
     }
-
-    private class getHTTPData extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            layout_news_normal.removeAllViews();
-            tv_news_time.setText("");
-            tv_news_des.setText("");
-            tv_news_title.setText(getString(R.string.loading));
-            tv_news_title.getParent().requestChildFocus(tv_news_title, tv_news_title);
-            tv_suggest_news.setText("");
-            rv_suggest_news.setAdapter(null);
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            getArticleData(url);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            if (article != null) {
-                setArticleData();
-                getSuggestNews();
-                if (tv_news_time.getText().equals("") && tv_news_des.getText().equals("")){
-                    tv_news_title.setText("Not supported article type.");
-                }
-            }else {
-                tv_news_title.setText(getString(R.string.disconnect));
-            }
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_save, menu);
